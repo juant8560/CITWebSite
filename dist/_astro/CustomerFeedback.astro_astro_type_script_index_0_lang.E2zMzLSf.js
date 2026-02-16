@@ -1,1 +1,0 @@
-import{S as t}from"./swiper.xxcrlEO6.js";const i=window.innerWidth<600,e=new t(".feedback-swiper",{spaceBetween:20,slidesPerView:i?1:3,loop:!0,rewind:!0,centeredSlides:!0});document.getElementById("fb-next")?.addEventListener("click",()=>e.slideNext());document.getElementById("fb-prev")?.addEventListener("click",()=>e.slidePrev());
