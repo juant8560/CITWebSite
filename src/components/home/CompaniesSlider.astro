@@ -1,0 +1,89 @@
+---
+interface Props { customers: any[]; locale?: string; }
+const { customers, locale = 'es' } = Astro.props;
+const isEN = locale === 'en';
+---
+
+<section class="companies-section">
+  <h2 class="heading-medium subtitle">{isEN ? 'Companies that trust on us' : 'Empresas que confían en nosotros'}</h2>
+  <div class="marquee-wrapper">
+    <div class="marquee-track">
+      {customers.map((customer: any) => (
+        <div class="marquee-item">
+          <img src={customer.imagePath} alt="Customer" loading="lazy" />
+        </div>
+      ))}
+      {customers.map((customer: any) => (
+        <div class="marquee-item">
+          <img src={customer.imagePath} alt="Customer" loading="lazy" />
+        </div>
+      ))}
+      {customers.map((customer: any) => (
+        <div class="marquee-item">
+          <img src={customer.imagePath} alt="Customer" loading="lazy" />
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style lang="scss">
+  @use '../../styles/variables.scss' as *;
+
+  .companies-section {
+    background-color: $primaryBackgroundColor;
+    color: $primaryTextColor;
+    padding: 6rem 0;
+    overflow: hidden;
+  }
+
+  .subtitle { padding-inline: 3rem; text-align: center; margin-bottom: 3rem; }
+
+  .marquee-wrapper {
+    width: 100%;
+    overflow: hidden;
+    padding-block: 2rem; /* Space for hover scale */
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  }
+
+  .marquee-track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    animation: marquee-scroll 35s linear infinite;
+    &:hover { animation-play-state: paused; }
+  }
+
+  @keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-100% / 3)); }
+  }
+
+  .marquee-item {
+    flex-shrink: 0;
+    width: 6rem;
+    height: 4rem;
+    display: grid;
+    place-items: center;
+    margin: 0 1.2rem;
+    filter: grayscale(100%) brightness(0.8) contrast(0.6);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+
+    img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+    }
+
+    &:hover {
+      filter: grayscale(0) brightness(1) contrast(1);
+      z-index: 10;
+    }
+  }
+
+  @media screen and (min-width: 600px) {
+    .marquee-item { width: 9rem; height: 5.5rem; margin: 0 2.5rem; }
+    .marquee-track { animation-duration: 50s; }
+  }
+</style>

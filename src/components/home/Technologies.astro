@@ -1,0 +1,300 @@
+---
+interface Props { technologies: any[]; locale?: string; }
+const { technologies, locale = 'es' } = Astro.props;
+const isEN = locale === 'en';
+const innerRing = technologies.filter((t: any) => t.ringLevel === 1);
+const middleRing = technologies.filter((t: any) => t.ringLevel === 2);
+const outerRing = technologies.filter((t: any) => t.ringLevel === 3);
+const firstTech = technologies[0];
+
+// Compute positions using trigonometry - evenly distribute items around a circle
+function getPosition(index: number, total: number) {
+  const angle = (2 * Math.PI / total) * index - Math.PI / 2; // start from top
+  const x = 50 + 50 * Math.cos(angle);
+  const y = 50 + 50 * Math.sin(angle);
+  return { left: `${x.toFixed(2)}%`, top: `${y.toFixed(2)}%` };
+}
+---
+
+<section class="tech-section-wrapper">
+  <div class="tech-section">
+    <div class="info">
+      <h2 class="heading-medium title">{isEN ? 'Technologies' : 'Tecnologías'}</h2>
+      <div id="tech-info">
+        <h3 class="heading-medium tech-subtitle" id="tech-name">{firstTech?.name || ''}</h3>
+        <div class="description">
+          <p class="text-small" id="tech-desc">{isEN ? (firstTech?.descriptionEN || firstTech?.descriptionES || '') : (firstTech?.descriptionES || firstTech?.descriptionEN || '')}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-atomo">
+      <div class="atom-container">
+        <!-- Outer Ring (relative — defines the container size) -->
+        <div class="larger-ring">
+          {outerRing.map((tech: any, i: number) => {
+            const pos = getPosition(i, outerRing.length);
+            return (
+              <button class="large-tech tech-large tech-btn" data-name={tech.name} data-desc={isEN ? (tech.descriptionEN || tech.descriptionES) : (tech.descriptionES || tech.descriptionEN)} style={`left: ${pos.left}; top: ${pos.top};`}>
+                <img src={tech.logo} alt={tech.name} class="logo-filter" />
+              </button>
+            );
+          })}
+        </div>
+
+        <!-- Middle Ring -->
+        <div class="mid-ring">
+          {middleRing.map((tech: any, i: number) => {
+            const pos = getPosition(i, middleRing.length);
+            return (
+              <button class="middle-tech tech-medium tech-btn" data-name={tech.name} data-desc={isEN ? (tech.descriptionEN || tech.descriptionES) : (tech.descriptionES || tech.descriptionEN)} style={`left: ${pos.left}; top: ${pos.top};`}>
+                <img src={tech.logo} alt={tech.name} class="logo-filter" />
+              </button>
+            );
+          })}
+          <div class="dot dot1"></div>
+          <div class="dot dot2"></div>
+          <div class="dot dot3"></div>
+          <div class="dot dot4"></div>
+          <div class="dot dot5"></div>
+        </div>
+
+        <!-- Inner Ring -->
+        <div class="inner-ring">
+          {innerRing.map((tech: any, i: number) => {
+            const pos = getPosition(i, innerRing.length);
+            return (
+              <button class="inner-tech tech-small tech-btn" data-name={tech.name} data-desc={isEN ? (tech.descriptionEN || tech.descriptionES) : (tech.descriptionES || tech.descriptionEN)} style={`left: ${pos.left}; top: ${pos.top};`}>
+                <img src={tech.logo} alt={tech.name} class="logo-filter" />
+              </button>
+            );
+          })}
+        </div>
+
+        <div class="logo">
+          <img src="/images/cit-logo.png" alt="CIT Logo" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const techBtns = document.querySelectorAll('.tech-btn');
+  const techName = document.getElementById('tech-name');
+  const techDesc = document.getElementById('tech-desc');
+
+  techBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const name = btn.getAttribute('data-name') || '';
+      const desc = btn.getAttribute('data-desc') || '';
+      if (techName) techName.textContent = name;
+      if (techDesc) techDesc.textContent = desc;
+      techBtns.forEach(b => b.removeAttribute('data-active'));
+      btn.setAttribute('data-active', 'true');
+    });
+  });
+
+  if (techBtns.length > 0) techBtns[0].setAttribute('data-active', 'true');
+</script>
+
+<style lang="scss">
+  @use '../../styles/variables.scss' as *;
+
+  .tech-section-wrapper {
+    background-color: $secondBackgroundColor;
+    padding-inline: 3.7rem;
+    padding-block: 8.8rem;
+    color: $primaryTextColor;
+  }
+
+  .tech-section {
+    max-width: 1056px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .info { max-width: 38rem; }
+  .title { color: $primaryTextColor; margin-bottom: 3.5rem; }
+  .tech-subtitle { margin-bottom: 2rem; font-size: 1.6rem; }
+  .description { color: $secondaryTextColor; display: flex; flex-direction: column; gap: 2rem; max-height: 20rem; overflow: hidden; }
+
+  .container-atomo { flex: 1; display: flex; }
+
+  .logo-filter {
+    width: 100%; height: 100%;
+    padding: 0.6rem;
+    object-fit: contain;
+    filter: grayscale(100%) brightness(0.8) contrast(0.6);
+    transition: cubic-bezier(0.075, 0.82, 0.165, 1) 0.3s;
+    &:hover { transform: scale(1.1); }
+  }
+
+  .tech-btn[data-active='true'] .logo-filter {
+    filter: none;
+    transform: scale(1.1);
+  }
+
+  .logo {
+    position: absolute;
+    width: 5.5rem; height: 5.6rem;
+    z-index: 4;
+    img { width: 100%; height: 100%; object-fit: contain; }
+  }
+
+  .atom-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 4rem auto 8rem auto;
+    /* Outer ring (position: relative) sets the size;
+       inner/mid use inset:0 + margin:auto to centre */
+  }
+
+  .rings {
+    position: absolute;
+    border-radius: 50%;
+    background-color: transparent;
+  }
+
+  .tech-small, .tech-medium, .tech-large {
+    clip-path: circle(50% at center);
+    background-color: $secondBackgroundColor;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 0 0.8rem 0.8rem $secondBackgroundColor;
+    cursor: pointer;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    &:hover .logo-filter { filter: none; }
+  }
+
+  /* Smaller icons on mobile */
+  .tech-small { width: 3.5rem; height: 3.5rem; }
+  .tech-medium { width: 4rem; height: 4rem; }
+  .tech-large { width: 4rem; height: 4rem; }
+
+  .inner-ring {
+    @extend .rings;
+    aspect-ratio: 1 / 1;
+    width: 40vw; max-width: 16rem;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid $secondaryColor;
+    z-index: 3;
+    &:hover { box-shadow: 0 0 1rem 0 rgba($secondaryColor, 0.4); }
+  }
+
+  .mid-ring {
+    @extend .rings;
+    aspect-ratio: 1 / 1;
+    width: 60vw; max-width: 25rem;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid $thirdColor;
+    z-index: 2;
+    &:hover { box-shadow: 0 0 1rem 0 rgba($thirdColor, 0.4); }
+  }
+
+  .larger-ring {
+    @extend .rings;
+    position: relative;
+    aspect-ratio: 1 / 1;
+    width: 80vw; max-width: 35rem;
+    margin: 0 auto;
+    border: 2px solid $primaryColor;
+    z-index: 1;
+    &:hover { box-shadow: 0 0 1rem 0 rgba($primaryColor, 0.4); }
+  }
+
+  /* Dots */
+  .dot {
+    position: absolute;
+    width: 7.11px; height: 7.11px;
+    border-radius: 50%;
+    background: #53BBE2;
+    box-shadow: 0 0 1px 4px rgba(#53BBE2, 0.4);
+  }
+  .dot1 { top: 25%; left: 5%; transform: translate(-50%, 0); }
+  .dot2 { top: 25%; right: 5%; transform: translate(50%, 0); }
+  .dot3 { bottom: 25%; left: 5%; transform: translate(-50%, 0); }
+  .dot4 { bottom: 25%; right: 5%; transform: translate(50%, 0); }
+  .dot5 { bottom: 0; left: 50%; transform: translate(-50%, 50%); }
+
+  /* Ring rotation animations - MUST preserve the translate(-50%, -50%) for absolute elements */
+  @keyframes rotateRing {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes rotateRingReverse {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-360deg); }
+  }
+
+  @keyframes rotateRingCentered {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+  @keyframes rotateRingReverseCentered {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(-360deg); }
+  }
+
+  .inner-ring {
+    animation: rotateRingCentered 30s linear infinite;
+    transform-origin: center;
+  }
+  .mid-ring {
+    animation: rotateRingReverseCentered 45s linear infinite;
+    transform-origin: center;
+  }
+  .larger-ring {
+    animation: rotateRing 60s linear infinite; /* relative, no translate */
+    transform-origin: center;
+  }
+
+  /* Counter-rotate tech buttons to keep them upright */
+  .inner-tech {
+    animation: rotateRingCentered 30s linear infinite reverse;
+  }
+  .middle-tech {
+    animation: rotateRingReverseCentered 45s linear infinite reverse;
+  }
+  .large-tech {
+    animation: rotateRingCentered 60s linear infinite reverse;
+  }
+
+  /* Pause on hover */
+  .atom-container:hover .inner-ring,
+  .atom-container:hover .mid-ring,
+  .atom-container:hover .larger-ring,
+  .atom-container:hover .inner-tech,
+  .atom-container:hover .middle-tech,
+  .atom-container:hover .large-tech {
+    animation-play-state: paused;
+  }
+
+  @media screen and (max-width: 599px) {
+    .info { max-width: 100%; }
+    .tech-section { flex-direction: column; align-items: center; }
+    .container-atomo { min-width: 14rem; width: 100%; justify-content: center; }
+    .tech-section-wrapper { padding-inline: 1.5rem; padding-block: 5rem; }
+  }
+
+  @media screen and (min-width: 600px) {
+    .description { max-height: 38rem; }
+    .title { margin-bottom: 5rem; }
+    .logo { width: 9.965rem; height: 10.2rem; }
+    .inner-ring { width: 28rem; max-width: 28rem; }
+    .mid-ring { width: 42rem; max-width: 42rem; }
+    .larger-ring { width: 58rem; max-width: 58rem; }
+    .tech-small { width: 4.5rem; height: 4.5rem; }
+    .tech-medium { width: 5rem; height: 5rem; }
+    .tech-large { width: 5.5rem; height: 5.5rem; }
+  }
+</style>

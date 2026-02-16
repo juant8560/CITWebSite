@@ -1,0 +1,52 @@
+---
+import Header from '../components/shared/Header.astro';
+import Footer from '../components/shared/Footer.astro';
+
+interface Props {
+  title?: string;
+  footerContent?: any;
+  locale?: string;
+}
+
+const { title = 'CIT - Creative IT', footerContent, locale = 'es' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={locale}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <title>{title}</title>
+</head>
+<body>
+  <Header locale={locale} />
+  <slot />
+  {footerContent && <Footer content={footerContent} locale={locale} />}
+
+  <script>
+    // Scroll reveal observer
+    const revealElements = document.querySelectorAll('.scroll-reveal');
+    if (revealElements.length > 0) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+      revealElements.forEach(el => observer.observe(el));
+    }
+  </script>
+</body>
+</html>
+
+<style lang="scss" is:global>
+  @use '../styles/global.scss';
+</style>

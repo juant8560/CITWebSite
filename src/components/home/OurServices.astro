@@ -1,0 +1,115 @@
+---
+interface Props { services: any[]; locale?: string; }
+const { services, locale = 'es' } = Astro.props;
+const isEN = locale === 'en';
+---
+
+<section class="services-section" id="services">
+  <h2 class="heading-medium subtitle">{isEN ? 'Our Services' : 'Nuestros servicios'}</h2>
+  <div class="services-wrapper">
+    {services.map((service: any) => (
+      <div class="service-card">
+        <div class="logo">
+          <img src={service.logo} alt={service.nameEN || service.nameES} loading="lazy" />
+        </div>
+        <div class="info">
+          <h3 class="heading-small">{isEN ? (service.nameEN || service.nameES) : (service.nameES || service.nameEN)}</h3>
+          <p class="text-tiny desc">{isEN ? (service.descriptionEN || service.descriptionES) : (service.descriptionES || service.descriptionEN)}</p>
+          <span class="text-tiny link">
+            <a href={`/serviceDetails/${service.id}${isEN ? '?lang=en' : ''}`}>{isEN ? 'Check it out' : 'Ver más'}</a>
+            <img src="/svg/arrow-right.svg" alt="Arrow right" width="12" height="12" />
+          </span>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style lang="scss">
+  @use '../../styles/variables.scss' as *;
+
+  .services-section {
+    position: relative;
+    padding-inline: 4px;
+    max-width: 111rem;
+    margin: 0 auto;
+    padding-block: 6rem;
+  }
+
+  .subtitle {
+    color: $primaryTextColor;
+    margin-bottom: 3.5rem;
+  }
+
+  .services-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  .logo {
+    position: relative;
+    width: 7rem;
+    height: 7rem;
+    max-width: 12rem;
+    max-height: 12rem;
+    flex-shrink: 0;
+    img { width: 100%; height: 100%; object-fit: contain; }
+  }
+
+  .service-card {
+    padding: 2rem;
+    padding-right: 2rem;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 11.1rem;
+    height: auto;
+    max-width: 52rem;
+    background: linear-gradient(332.04deg, #2B2B2B -9.13%, rgba(43, 43, 43, 0.38) 93.1%);
+    box-shadow: 0px 15px 30px rgba(43, 47, 66, 0.1);
+    border-radius: 10px;
+    transition: all 0.5s ease-out;
+    &:hover {
+      box-shadow: 0px 15px 30px rgba(43, 47, 66, 0.2);
+      transform: translateX(1rem);
+      background: linear-gradient(332.04deg, rgba(43, 43, 43, 0.38) -9.13%, #2B2B2B 93.1%);
+      transition: all 0.3s ease-in;
+    }
+  }
+
+  .info { color: $primaryTextColor; }
+  .desc { color: $secondaryTextColor; }
+  .link {
+    line-height: 1.2rem;
+    display: inline-flex;
+    gap: 1rem;
+    color: $primaryTextColor;
+    a { color: $primaryTextColor; }
+  }
+
+  @media screen and (min-width: 376px) {
+    .services-section { padding-inline: calc(3.7rem - 2.1rem); }
+    .logo { width: 7.2rem; height: 7.2rem; }
+    .service-card { padding-right: 5rem; gap: 2.6rem; }
+  }
+
+  @media screen and (min-width: 600px) {
+    .service-card {
+      height: 20rem;
+      padding-left: 7.5rem;
+      padding-block: 5rem;
+      padding-right: 10rem;
+    }
+    .services-wrapper { gap: 3.1rem; }
+    .logo { 
+      width: 12rem; height: 12rem; 
+      /* Target the pink icon specifically if it looks too small */
+      img[src*="service-outsourcing"] { transform: scale(1.3); } 
+      img[src*="subcontratacion"] { transform: scale(1.3); }
+    }
+  }
+</style>

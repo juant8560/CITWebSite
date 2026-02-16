@@ -1,0 +1,724 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import HeroFooter from '../../components/shared/HeroFooter.astro';
+import { CaseStudyDetailService, CaseStudiesContentService } from '../../services/CaseStudiesService';
+import { CommonContentService } from '../../services/CommonContentService';
+
+export async function getStaticPaths() {
+  const caseStudies = await CaseStudiesContentService.getCaseStudies('es');
+  return caseStudies.map((cs: any) => ({
+    params: { csid: cs.id.toString() },
+  }));
+}
+
+const { csid } = Astro.params;
+const id = Number(csid);
+const locale = Astro.url.searchParams.get('lang') || 'es';
+const isEN = locale === 'en';
+
+const caseStudyInfo = await CaseStudyDetailService.getCaseStudyInfo(id);
+const detailContent = await CaseStudyDetailService.getCaseStudyDetailContent(locale, id);
+const metrics = await CaseStudyDetailService.getMetrics(locale, id);
+const achievements = await CaseStudyDetailService.getAchievements(locale, id);
+const howItWorks = await CaseStudyDetailService.getAppStack(locale, id);
+const ourProcess = await CaseStudyDetailService.getOurProcess(locale, id);
+const csGallery = await CaseStudyDetailService.getGallery(id);
+const technologies = detailContent?.idTechnologies ? await CaseStudyDetailService.getTechnologies(detailContent.idTechnologies) : [];
+const categories = caseStudyInfo?.idCategories ? await CaseStudyDetailService.getCategories(caseStudyInfo.idCategories) : [];
+const services = await CommonContentService.getServicesContent(locale);
+const footerHero = await CommonContentService.getHeroFooterContent(locale);
+const footer = await CommonContentService.getFooterContent();
+
+// Filter delivered services if idsServices exists
+const deliveredServices = detailContent?.idsServices
+  ? services.filter((s: any) => detailContent.idsServices.includes(s.id))
+  : [];
+---
+
+<Layout title={`CIT - ${caseStudyInfo?.name || 'Case Study'}`} footerContent={footer} locale={locale}>
+  <!-- Hero -->
+  <section class="csd-hero" style={caseStudyInfo?.picture ? `background-image: url(${caseStudyInfo.picture})` : ''}>
+    <div class="hero-overlay">
+      <div class="hero-content">
+        {categories.length > 0 && (
+          <div class="hero-categories">
+            {categories.map((cat: any) => (
+              <span class="category-tag">{isEN ? (cat.nameEN || cat.nameES) : (cat.nameES || cat.nameEN)}</span>
+            ))}
+          </div>
+        )}
+        {caseStudyInfo?.logo && <img src={caseStudyInfo.logo} alt={caseStudyInfo.name} class="service-logo" />}
+        <h1 class="heading-large">{isEN ? (detailContent?.heroTitleEN || detailContent?.heroTitleES || caseStudyInfo?.name) : (detailContent?.heroTitleES || detailContent?.heroTitleEN || caseStudyInfo?.name)}</h1>
+        <p class="text-small hero-desc">{isEN ? (detailContent?.heroDescriptionEN || detailContent?.heroDescriptionES) : (detailContent?.heroDescriptionES || detailContent?.heroDescriptionEN)}</p>
+        <div class="hero-actions">
+          <div class="btn-wrapper-gradient">
+            <a class="custom-btn" href="https://wkf.ms/3jKnYSm" target="_blank">{isEN ? 'Get Started!' : '¡Contáctenos!'}</a>
+          </div>
+          {detailContent?.pdf && (
+            <a class="pdf-link" href={detailContent.pdf} target="_blank">
+              <span>{isEN ? 'Download PDF' : 'Descargar PDF'}</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- At a Glance -->
+  {detailContent && (
+    <section class="at-a-glance scroll-reveal">
+      <div class="glance-container">
+        <h2 class="heading-medium section-title">{isEN ? 'At a Glance' : 'De un vistazo'}</h2>
+        <div class="glance-grid">
+          {categories.length > 0 && (
+            <div class="glance-card">
+              <div class="glance-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#53BBE2" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              </div>
+              <h4 class="heading-small">{isEN ? 'Industry' : 'Industria'}</h4>
+              <p class="text-small">{categories.map((c: any) => isEN ? (c.nameEN || c.nameES) : (c.nameES || c.nameEN)).join(', ')}</p>
+            </div>
+          )}
+          {(detailContent.companySizeES || detailContent.companySizeEN) && (
+            <div class="glance-card">
+              <div class="glance-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#BD4E80" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <h4 class="heading-small">{isEN ? 'Company Size' : 'Tamaño'}</h4>
+              <p class="text-small">{isEN ? (detailContent.companySizeEN || detailContent.companySizeES) : (detailContent.companySizeES || detailContent.companySizeEN)}</p>
+            </div>
+          )}
+          {(detailContent.goalES || detailContent.goalEN) && (
+            <div class="glance-card">
+              <div class="glance-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F58523" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              </div>
+              <h4 class="heading-small">{isEN ? 'Goal' : 'Objetivo'}</h4>
+              <p class="text-small">{isEN ? (detailContent.goalEN || detailContent.goalES) : (detailContent.goalES || detailContent.goalEN)}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Technologies -->
+  {technologies.length > 0 && (
+    <section class="csd-technologies scroll-reveal">
+      <h2 class="heading-medium section-title">{isEN ? 'Technologies Used' : 'Tecnologías Utilizadas'}</h2>
+      <div class="tech-grid">
+        {technologies.map((tech: any) => (
+          <div class="tech-card">
+            <img src={tech.logo} alt={tech.name || 'Tech'} loading="lazy" />
+            {tech.name && <span class="text-tiny">{tech.name}</span>}
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Metrics -->
+  {metrics.length > 0 && (
+    <section class="csd-metrics scroll-reveal">
+      <div class="metrics-container">
+        {metrics.map((m: any) => (
+          <div class="metric-card">
+            <h3 class="heading-large metric-value">{m.metricValue}{isEN ? (m.suffixEN || m.suffixES || '') : (m.suffixES || m.suffixEN || '')}</h3>
+            <p class="text-small">{isEN ? (m.descriptionEN || m.descriptionES) : (m.descriptionES || m.descriptionEN)}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Achievements -->
+  {achievements.length > 0 && (
+    <section class="csd-achievements scroll-reveal">
+      <h2 class="heading-medium section-title">{isEN ? 'Achievements' : 'Logros'}</h2>
+      <div class="achievements-grid">
+        {achievements.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).map((a: any) => (
+          <div class="achievement-card">
+            {a.picture && (
+              <div class="achievement-img">
+                <img src={a.picture} alt={isEN ? (a.titleEN || a.titleES) : (a.titleES || a.titleEN)} loading="lazy" />
+              </div>
+            )}
+            <div class="achievement-body">
+              <h4 class="heading-small">{isEN ? (a.titleEN || a.titleES) : (a.titleES || a.titleEN)}</h4>
+              <p class="text-small">{isEN ? (a.descriptionEN || a.descriptionES) : (a.descriptionES || a.descriptionEN)}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- App Stack / How It Works -->
+  {howItWorks?.appStack?.length > 0 && (
+    <section class="csd-appstack scroll-reveal">
+      <h2 class="heading-medium section-title">{isEN ? 'How It Works' : 'Cómo Funciona'}</h2>
+      <div class="appstack-content">
+        <div class="appstack-list">
+          {howItWorks.appStack.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).map((item: any, i: number) => (
+            <div class="appstack-item">
+              <span class="appstack-number">{String(i + 1).padStart(2, '0')}</span>
+              <p class="text-small">{isEN ? (item.titleEN || item.titleES) : (item.titleES || item.titleEN)}</p>
+            </div>
+          ))}
+        </div>
+        {howItWorks.image?.picture && (
+          <div class="appstack-image">
+            <img src={howItWorks.image.picture} alt="Architecture" loading="lazy" />
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
+  <!-- Our Process -->
+  {ourProcess.length > 0 && (
+    <section class="csd-process scroll-reveal">
+      <h2 class="heading-medium section-title">{isEN ? 'Our Process' : 'Nuestro Proceso'}</h2>
+      <div class="process-grid">
+        {ourProcess.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).map((p: any, i: number) => (
+          <div class="process-card">
+            <span class="process-step">{String(i + 1).padStart(2, '0')}</span>
+            {p.picture && (
+              <div class="process-img">
+                <img src={p.picture} alt={isEN ? (p.titleEN || p.titleES) : (p.titleES || p.titleEN)} loading="lazy" />
+              </div>
+            )}
+            <h4 class="heading-small">{isEN ? (p.titleEN || p.titleES) : (p.titleES || p.titleEN)}</h4>
+            <p class="text-small">{isEN ? (p.descriptionEN || p.descriptionES) : (p.descriptionES || p.descriptionEN)}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Gallery -->
+  {csGallery.length > 0 && (
+    <section class="csd-gallery scroll-reveal">
+      <h2 class="heading-medium section-title">{isEN ? 'Gallery' : 'Galería'}</h2>
+      <div class="gallery-grid">
+        {csGallery.map((g: any) => (
+          <div class="gallery-item">
+            <img src={g.pathImage} alt="Gallery" loading="lazy" />
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Delivered Services -->
+  {deliveredServices.length > 0 && (
+    <section class="csd-services scroll-reveal">
+      <h2 class="heading-medium section-title">{isEN ? 'Delivered Services' : 'Servicios Entregados'}</h2>
+      <div class="services-grid">
+        {deliveredServices.map((s: any) => (
+          <a href={`/serviceDetails/${s.id}${isEN ? '?lang=en' : ''}`} class="service-card">
+            <img src={s.logo} alt={isEN ? (s.nameEN || s.nameES) : (s.nameES || s.nameEN)} />
+            <div class="service-card-info">
+              <h4 class="heading-small">{isEN ? (s.nameEN || s.nameES) : (s.nameES || s.nameEN)}</h4>
+              <p class="text-tiny">{isEN ? (s.descriptionEN || s.descriptionES || '').substring(0, 80) : (s.descriptionES || s.descriptionEN || '').substring(0, 80)}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <HeroFooter content={footerHero} locale={locale} />
+</Layout>
+
+<style lang="scss">
+  @use '../../styles/variables.scss' as *;
+
+  /* ── Section title ── */
+  .section-title {
+    color: $primaryTextColor;
+    text-align: center;
+    margin-bottom: 5rem;
+  }
+
+  /* ── Hero ── */
+  .csd-hero {
+    position: relative;
+    background-color: $primaryBackgroundColor;
+    background-size: cover;
+    background-position: center;
+    min-height: 58rem;
+    text-align: center;
+    color: $primaryTextColor;
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba($primaryBackgroundColor, 0.7) 0%, rgba($primaryBackgroundColor, 0.92) 60%, $primaryBackgroundColor 100%);
+    display: grid;
+    place-content: center;
+    padding: 14rem 3.7rem 6rem;
+  }
+  .hero-content {
+    max-width: 80rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+  }
+  .hero-categories {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .category-tag {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: $thirdColor;
+    padding: 0.5rem 1.6rem;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .service-logo {
+    max-width: 16rem;
+    height: auto;
+    object-fit: contain;
+  }
+  .hero-desc {
+    color: $secondaryTextColor;
+    max-width: 65rem;
+    line-height: 1.7;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn-wrapper-gradient {
+    border-radius: 0.6rem;
+    background-image: linear-gradient(101deg, #F58523, #BD4E80, #2ABCDA);
+    width: 12.5rem;
+    height: 4.3rem;
+    display: grid;
+    place-items: center;
+  }
+  .custom-btn {
+    font-size: 1.4rem;
+    color: $primaryTextColor;
+    width: 12.2rem;
+    height: 4rem;
+    border-radius: 0.6rem;
+    background-color: $primaryBackgroundColor;
+    background-size: 0;
+    display: grid;
+    place-items: center;
+    text-decoration: none;
+    padding-bottom: 0;
+    &:hover {
+      background-image: linear-gradient(101deg, #F58523, #BD4E80, #2ABCDA);
+      background-size: cover;
+      cursor: pointer;
+    }
+  }
+  .pdf-link {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: $thirdColor;
+    font-size: 1.4rem;
+    text-decoration: none;
+    border: 1px solid $thirdColor;
+    border-radius: 0.6rem;
+    padding: 1rem 2rem;
+    padding-bottom: 1rem;
+    background-image: none;
+    background-size: 0;
+    transition: all 0.3s;
+    &:hover {
+      background: rgba($thirdColor, 0.1);
+      background-size: 0;
+    }
+  }
+
+  /* ── At a Glance ── */
+  .at-a-glance {
+    background-color: $secondBackgroundColor;
+    padding: 8rem 3.7rem;
+    color: $primaryTextColor;
+  }
+  .glance-container {
+    max-width: 100rem;
+    margin: 0 auto;
+  }
+  .glance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+    gap: 3rem;
+  }
+  .glance-card {
+    background: linear-gradient(332.04deg, #2B2B2B -9.13%, rgba(43, 43, 43, 0.38) 93.1%);
+    border-radius: 1.2rem;
+    padding: 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    h4 {
+      color: $primaryTextColor;
+      margin-bottom: 1rem;
+    }
+    p {
+      color: $secondaryTextColor;
+      line-height: 1.6;
+    }
+  }
+  .glance-icon {
+    width: 4.8rem;
+    height: 4.8rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.04);
+    display: grid;
+    place-items: center;
+    margin-bottom: 2rem;
+  }
+
+  /* ── Technologies ── */
+  .csd-technologies {
+    background-color: $primaryBackgroundColor;
+    padding: 8rem 3.7rem;
+    color: $primaryTextColor;
+  }
+  .tech-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2.5rem;
+    max-width: 90rem;
+    margin: 0 auto;
+  }
+  .tech-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    width: 9rem;
+    text-align: center;
+    img {
+      width: 5.5rem;
+      height: 5.5rem;
+      object-fit: contain;
+      filter: grayscale(100%) brightness(0.9);
+      transition: all 0.3s ease;
+    }
+    span {
+      color: $secondaryTextColor;
+      font-size: 1.1rem;
+    }
+    &:hover img {
+      filter: none;
+      transform: scale(1.1);
+    }
+  }
+
+  /* ── Metrics ── */
+  .csd-metrics {
+    background: linear-gradient(135deg, rgba(#F58523, 0.06) 0%, rgba(#BD4E80, 0.06) 50%, rgba(#2ABCDA, 0.06) 100%);
+    background-color: $secondBackgroundColor;
+    padding: 8rem 3.7rem;
+  }
+  .metrics-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4rem;
+    max-width: 90rem;
+    margin: 0 auto;
+  }
+  .metric-card {
+    text-align: center;
+    min-width: 18rem;
+    flex: 1;
+  }
+  .metric-value {
+    background: linear-gradient(to right, $primaryColor, $secondaryColor, $thirdColor);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    font-size: 5rem;
+  }
+  .metric-card p {
+    color: $secondaryTextColor;
+    line-height: 1.5;
+  }
+
+  /* ── Achievements ── */
+  .csd-achievements {
+    background-color: $primaryBackgroundColor;
+    padding: 8rem 3.7rem;
+    color: $primaryTextColor;
+  }
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+    gap: 3rem;
+    max-width: 110rem;
+    margin: 0 auto;
+  }
+  .achievement-card {
+    background: $secondBackgroundColor;
+    border-radius: 1.2rem;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
+  }
+  .achievement-img {
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+  }
+  .achievement-card:hover .achievement-img img {
+    transform: scale(1.05);
+  }
+  .achievement-body {
+    padding: 2.5rem;
+    h4 {
+      color: $primaryTextColor;
+      margin-bottom: 1rem;
+    }
+    p {
+      color: $secondaryTextColor;
+      line-height: 1.6;
+    }
+  }
+
+  /* ── App Stack ── */
+  .csd-appstack {
+    background-color: $secondBackgroundColor;
+    padding: 8rem 3.7rem;
+    color: $primaryTextColor;
+  }
+  .appstack-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5rem;
+    justify-content: center;
+    align-items: center;
+    max-width: 100rem;
+    margin: 0 auto;
+  }
+  .appstack-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    flex: 1;
+    min-width: 28rem;
+  }
+  .appstack-item {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 1rem;
+    padding: 1.5rem 2rem;
+    border-left: 3px solid $thirdColor;
+    p {
+      color: $captionTextColor;
+    }
+  }
+  .appstack-number {
+    font-family: 'Nexa';
+    font-size: 2rem;
+    font-weight: 700;
+    color: $thirdColor;
+    opacity: 0.6;
+  }
+  .appstack-image {
+    flex: 1;
+    min-width: 28rem;
+    max-width: 45rem;
+    img {
+      width: 100%;
+      border-radius: 1.2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  /* ── Our Process ── */
+  .csd-process {
+    background-color: $primaryBackgroundColor;
+    padding: 8rem 3.7rem;
+    color: $primaryTextColor;
+  }
+  .process-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+    gap: 3rem;
+    max-width: 110rem;
+    margin: 0 auto;
+  }
+  .process-card {
+    background: $secondBackgroundColor;
+    border-radius: 1.2rem;
+    padding: 2.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: transform 0.3s ease;
+    &:hover {
+      transform: translateY(-3px);
+    }
+  }
+  .process-step {
+    font-family: 'Nexa';
+    font-size: 3.5rem;
+    font-weight: 700;
+    background: linear-gradient(101deg, #F58523, #BD4E80, #2ABCDA);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.4;
+    display: block;
+    margin-bottom: 1.5rem;
+  }
+  .process-img {
+    border-radius: 0.8rem;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    aspect-ratio: 16/10;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  .process-card {
+    h4 {
+      color: $primaryTextColor;
+      margin-bottom: 0.8rem;
+    }
+    p {
+      color: $secondaryTextColor;
+      line-height: 1.6;
+    }
+  }
+
+  /* ── Gallery ── */
+  .csd-gallery {
+    background-color: $secondBackgroundColor;
+    padding: 8rem 3.7rem;
+  }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
+    gap: 2.5rem;
+    max-width: 120rem;
+    margin: 0 auto;
+  }
+  .gallery-item {
+    border-radius: 1.2rem;
+    overflow: hidden;
+    aspect-ratio: 16/10;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    &:hover img {
+      transform: scale(1.05);
+    }
+  }
+
+  /* ── Delivered Services ── */
+  .csd-services {
+    background-color: $primaryBackgroundColor;
+    padding: 8rem 3.7rem;
+    color: $primaryTextColor;
+  }
+  .services-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    max-width: 90rem;
+    margin: 0 auto;
+  }
+  .service-card {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    background: linear-gradient(332.04deg, #2B2B2B -9.13%, rgba(43, 43, 43, 0.38) 93.1%);
+    border-radius: 1.2rem;
+    padding: 2rem 2.5rem;
+    padding-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    text-decoration: none;
+    background-size: 0;
+    min-width: 28rem;
+    flex: 1;
+    max-width: 40rem;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    img {
+      width: 4.5rem;
+      height: 4.5rem;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    &:hover {
+      transform: translateX(0.5rem);
+      border-color: rgba($thirdColor, 0.3);
+    }
+  }
+  .service-card-info {
+    h4 {
+      color: $primaryTextColor;
+      margin-bottom: 0.4rem;
+    }
+    p {
+      color: $secondaryTextColor;
+      line-height: 1.4;
+    }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 768px) {
+    .csd-hero {
+      min-height: 42rem;
+    }
+    .hero-overlay {
+      padding: 12rem 2rem 4rem;
+    }
+    .hero-content h1 {
+      font-size: 3.2rem;
+    }
+    .gallery-grid {
+      grid-template-columns: 1fr;
+    }
+    .achievements-grid {
+      grid-template-columns: 1fr;
+    }
+    .process-grid {
+      grid-template-columns: 1fr;
+    }
+    .service-card {
+      min-width: 100%;
+    }
+    .metric-value {
+      font-size: 3.5rem;
+    }
+  }
+</style>

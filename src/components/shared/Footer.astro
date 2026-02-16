@@ -1,0 +1,195 @@
+---
+interface Props {
+  content: any;
+  locale?: string;
+}
+const { content, locale = 'es' } = Astro.props;
+const { locations = [], contact = {} } = content || {};
+const isEN = locale === 'en';
+
+const getFirstWord = (text: string) => text.split(' ')[0];
+const restOfText = (text: string) => text.split(' ').slice(1).join(' ');
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="info-wrapper">
+      <div class="logo">
+        <img src="/images/creative_logo.png" alt="CIT Logo" />
+      </div>
+      <h3 class="heading-small subtitle">{isEN ? 'Locations' : 'Ubicaciones'}</h3>
+      <div>
+        {locations.map((loc: any) => (
+          <p class="text-small text">
+            {getFirstWord(loc.address)} {restOfText(loc.address)}
+          </p>
+        ))}
+      </div>
+    </div>
+    <div class="social-media">
+      <h3 class="heading-small subtitle">{isEN ? 'Follow us' : 'Síguenos'}</h3>
+      <div class="media-icons">
+        {contact.instagram && (
+          <a href={contact.instagram} target="_blank" rel="noopener noreferrer">
+            <div class="icon-container">
+              <img src="/svg/instagram_icon.svg" alt="Instagram" width="12" height="12" />
+            </div>
+          </a>
+        )}
+        {contact.linkedin && (
+          <a href={contact.linkedin} target="_blank" rel="noopener noreferrer">
+            <div class="icon-container">
+              <img src="/svg/linkedin_icon.svg" alt="LinkedIn" width="12" height="12" />
+            </div>
+          </a>
+        )}
+        {contact.facebook && (
+          <a href={contact.facebook} target="_blank" rel="noopener noreferrer">
+            <div class="icon-container">
+              <img src="/svg/facebook_icon.svg" alt="Facebook" width="12" height="12" />
+            </div>
+          </a>
+        )}
+      </div>
+      {contact.email && (
+        <a href={`mailto:${contact.email}`} class="text-small contact-link" rel="noopener noreferrer">
+          <img src="/svg/mail_icon.svg" alt="Mail" width="12" height="12" /> {contact.email}
+        </a>
+      )}
+      {contact.phone && (
+        <a href={`tel:${contact.phone}`} class="text-small contact-link" rel="noopener noreferrer">
+          <img src="/svg/location_icon.svg" alt="Phone" width="12" height="12" /> {contact.phone}
+        </a>
+      )}
+    </div>
+  </div>
+  <div class="rights-conditions">
+    <p class="text-small">{isEN ? 'All rights reserved 2022 CIT' : 'Todos los derechos reservados 2022 CIT'}</p>
+    <p class="text-small">{isEN ? 'Privacy Policy' : 'Políticas de privacidad'}</p>
+  </div>
+</footer>
+
+<style lang="scss">
+  @use '../../styles/variables.scss' as *;
+
+  .footer { position: relative; background-color: $primaryBackgroundColor; }
+
+  .info-wrapper {
+    background-color: $secondBackgroundColor;
+    display: grid;
+    place-items: center;
+    padding-inline: 3.8rem;
+    padding-top: 4.2rem;
+    padding-bottom: 5.7rem;
+    text-align: center;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .logo {
+    width: 15.832rem;
+    height: 4.8rem;
+    position: relative;
+    margin-bottom: 4rem;
+    margin-inline: auto;
+    img { width: 100%; height: auto; }
+  }
+
+  .subtitle {
+    color: $primaryTextColor;
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
+    text-align: center;
+  }
+
+  .text {
+    color: $secondaryTextColor;
+    margin-bottom: 1.6rem;
+  }
+
+  .social-media {
+    height: 80vw;
+    padding-top: 2rem;
+    background-color: $primaryBackgroundColor;
+    display: grid;
+    place-content: center;
+    background-image: url('/images/bg-cit-dots.png');
+    background-repeat: no-repeat;
+    background-position: bottom;
+    background-size: cover;
+    box-shadow: inset -4px 22px 34px 16px rgba($primaryBackgroundColor, 1);
+    a { background: none; }
+  }
+
+  .media-icons {
+    display: flex;
+    gap: 1.32rem;
+    margin-bottom: 2rem;
+  }
+
+  .icon-container {
+    background-color: white;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    height: 3.25rem;
+    width: 3.25rem;
+  }
+
+  .contact-link {
+    color: $secondaryTextColor;
+    display: flex;
+    justify-content: flex-start;
+    gap: 1.33rem;
+    align-items: center;
+  }
+
+  .rights-conditions {
+    width: 100%;
+    max-height: 6rem;
+    padding-inline: 4.6vw;
+    padding-block: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    background-color: $secondBackgroundColor;
+    p { color: $secondaryTextColor; }
+  }
+
+  @media screen and (min-width: 600px) {
+    .logo {
+      width: 19.238rem;
+      height: 5rem;
+      margin-inline: 0;
+    }
+    .container {
+      flex-direction: row;
+      max-height: 50rem;
+      height: 100%;
+    }
+    .info-wrapper {
+      width: 50%;
+      background-color: $primaryBackgroundColor;
+      text-align: left;
+      place-items: start;
+      padding-block: 7rem;
+      padding-left: 17rem;
+    }
+    .subtitle { text-align: left; margin-bottom: 2.4rem; }
+    .social-media {
+      width: 50%;
+      height: 50rem;
+      max-height: 50rem;
+      background-position: 24px -68px;
+      box-shadow: inset 35px 32px 32px 32px rgba(31, 31, 31, 1);
+      padding-top: 8rem;
+    }
+    .media-icons { margin-top: -1.2rem; margin-bottom: 3rem; }
+    .rights-conditions { padding-inline: 17rem; }
+  }
+</style>

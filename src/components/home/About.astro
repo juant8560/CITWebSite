@@ -1,0 +1,130 @@
+---
+interface Props { aboutContent: any; locale?: string; }
+const { aboutContent, locale = 'es' } = Astro.props;
+const isEN = locale === 'en';
+---
+
+<section class="about-section" id="about">
+  <h2 class="heading-medium subtitle">{isEN ? 'About Our Company' : 'Acerca de nuestra empresa'}</h2>
+  <div class="video-container">
+    {aboutContent?.placeholderImage && (
+      <div class="video-placeholder" id="video-placeholder" style={`background-image: url(${aboutContent.placeholderImage})`}>
+        {aboutContent.videoPath && aboutContent.videoPath.trim() !== '' && (
+          <button class="gradient-btn" id="play-btn">
+            <img src="/svg/play.svg" alt="Play" width="17" style="height: auto" />
+            <span>{isEN ? 'Play video' : 'Reproducir video'}</span>
+          </button>
+        )}
+      </div>
+    )}
+    <div class="video-player" id="video-player" style="display:none;">
+      <iframe
+        id="video-iframe"
+        width="100%"
+        height="100%"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ videoPath: aboutContent?.videoPath || '' }}>
+  const playBtn = document.getElementById('play-btn');
+  const placeholder = document.getElementById('video-placeholder');
+  const player = document.getElementById('video-player');
+  const iframe = document.getElementById('video-iframe');
+
+  if (playBtn && videoPath.trim()) {
+    playBtn.addEventListener('click', () => {
+      if (placeholder) placeholder.style.display = 'none';
+      if (player) player.style.display = 'block';
+      // Convert YouTube URL to embed
+      let embedUrl = videoPath;
+      if (videoPath.includes('youtube.com/watch')) {
+        const videoId = new URL(videoPath).searchParams.get('v');
+        embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+      } else if (videoPath.includes('youtu.be/')) {
+        const videoId = videoPath.split('youtu.be/')[1];
+        embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+      }
+      if (iframe) iframe.setAttribute('src', embedUrl);
+    });
+  }
+</script>
+
+<style lang="scss">
+  @use '../../styles/variables.scss' as *;
+
+  .about-section { margin-bottom: 8rem; }
+
+  .subtitle {
+    color: $primaryTextColor;
+    text-align: center;
+    margin-bottom: 3.5rem;
+  }
+
+  .video-container {
+    border-radius: 2.2rem;
+    width: 100%;
+    max-width: 91.6rem;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    position: relative;
+    display: block;
+    margin: 0 auto;
+    background-color: $primaryBackgroundColor;
+    background: linear-gradient(110deg, $thirdBackgroundColor 8%, $secondBackgroundColor 18%, $primaryBackgroundColor 33%);
+    overflow: hidden;
+  }
+
+  .video-placeholder {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    border-radius: 2.2rem;
+    position: relative;
+    &::after {
+      content: '';
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 2.2rem;
+      position: absolute;
+      top: 0; bottom: 0; left: 0; right: 0;
+    }
+  }
+
+  .video-player {
+    width: 100%;
+    height: 100%;
+    border-radius: 2.2rem;
+    overflow: hidden;
+  }
+
+  .gradient-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    background: linear-gradient(270.17deg, #0098D8 4.82%, #BD4E80 52.07%, #F58523 99.85%);
+    border-radius: 5px;
+    border: none;
+    padding-block: 1.4rem;
+    padding-inline: 2.4rem;
+    color: $primaryTextColor;
+    font-size: 1.2rem;
+    font-family: 'Poppins', sans-serif;
+    position: absolute;
+    bottom: 20%;
+    left: 8%;
+    z-index: 2;
+    cursor: pointer;
+    transition: 0.2s ease-out;
+    &:hover { transform: translateY(-0.5rem); transition: 0.2s ease-in; }
+  }
+
+  @media screen and (min-width: 600px) {
+    .gradient-btn { font-size: 1.4rem; bottom: 3rem; left: 3rem; }
+  }
+</style>

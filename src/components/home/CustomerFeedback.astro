@@ -1,0 +1,143 @@
+---
+interface Props { feedback: any[]; locale?: string; }
+const { feedback, locale = 'es' } = Astro.props;
+const isEN = locale === 'en';
+---
+
+<section class="feedback-section">
+  <h2 class="heading-medium subtitle">{isEN ? 'What they say about us' : 'Que opinan nuestros clientes'}</h2>
+  <div class="container">
+    <div class="swiper feedback-swiper">
+      <div class="swiper-wrapper">
+        {feedback.map((item: any) => (
+          <div class="swiper-slide">
+            <div class="feedback-card">
+              <div class="customer-pic">
+                <img src={item.picture} alt="Customer" width="80" height="80" loading="lazy" />
+              </div>
+              <div class="info">
+                <div class="stars">
+                  {[...Array(5)].map(() => (
+                    <img src="/svg/star_feedback.svg" alt="Star" width="14" height="14" />
+                  ))}
+                </div>
+                <div class="info-header">
+                  <h3 class="heading-medium name">{item.name}</h3>
+                  <p class="caption-name">{item.companyName}</p>
+                </div>
+                <p class="comment">{item.commentEN || item.commentES}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+  <div class="slider-buttons-center">
+    <button class="slider-btn left" id="fb-prev">
+      <img src="/svg/arrow-down.svg" alt="Prev" width="12.5" height="12.5" />
+    </button>
+    <button class="slider-btn right" id="fb-next">
+      <img src="/svg/arrow-down.svg" alt="Next" width="12.5" height="12.5" />
+    </button>
+  </div>
+</section>
+
+<script>
+  import Swiper from 'swiper';
+  import 'swiper/css';
+
+  const isMobile = window.innerWidth < 600;
+  const fbSwiper = new Swiper('.feedback-swiper', {
+    spaceBetween: 20,
+    slidesPerView: isMobile ? 1 : 3,
+    loop: true,
+    rewind: true,
+    centeredSlides: true,
+  });
+
+  document.getElementById('fb-next')?.addEventListener('click', () => fbSwiper.slideNext());
+  document.getElementById('fb-prev')?.addEventListener('click', () => fbSwiper.slidePrev());
+</script>
+
+<style lang="scss">
+  @use '../../styles/variables.scss' as *;
+
+  .feedback-section {
+    background-color: #232323;
+    padding: 5.3rem 2rem 4.2rem;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .container { max-width: 1440px; margin: 0 auto; }
+
+  .subtitle { color: $primaryTextColor; text-align: center; margin-bottom: 4.7rem; }
+
+  .caption-name { font-size: 12px; color: $captionTextColor; letter-spacing: 1px; }
+
+  .feedback-card {
+    position: relative;
+    padding: 1.2rem 2.1rem;
+    background-color: $primaryBackgroundColor;
+    border-radius: 1rem;
+    display: grid;
+    place-items: center;
+    max-width: 44.3rem;
+    margin-top: 4.5rem;
+    margin-bottom: 3.3rem;
+  }
+
+  .customer-pic {
+    position: absolute;
+    top: 0;
+    transform: translateY(-50%);
+    img { border-radius: 50%; object-fit: cover; }
+  }
+
+  .name { color: $primaryTextColor; font-size: 1.9rem; }
+  .comment { color: $secondaryTextColor; margin-bottom: 1rem; }
+
+  .stars {
+    margin-bottom: 1.8rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .info {
+    margin-top: 6rem;
+    .info-header { margin-bottom: 1rem; }
+  }
+
+  .slider-buttons-center {
+    display: flex;
+    gap: 1.6rem;
+    justify-content: center;
+  }
+
+  .slider-btn {
+    width: 3.198rem; height: 3.198rem;
+    border: none; border-radius: 50%;
+    background: none;
+    background-color: $thirdBackgroundColor;
+    box-shadow: 0px 12.625px 25.25px rgba(43, 47, 66, 0.1);
+    display: grid; place-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+    &:hover { cursor: pointer; box-shadow: none; }
+  }
+
+  .left {
+    transform: rotate(90deg);
+    &:hover { transform: scale(1.12) rotate(90deg); }
+  }
+  .right {
+    transform: rotate(-90deg);
+    &:hover { transform: scale(1.12) rotate(-90deg); }
+  }
+
+  @media screen and (min-width: 600px) {
+    .feedback-card { padding: 2rem 4rem; margin-bottom: 5rem; }
+  }
+</style>

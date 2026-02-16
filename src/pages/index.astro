@@ -1,0 +1,82 @@
+---
+import Layout from '../layouts/Layout.astro';
+import HeroHome from '../components/home/HeroHome.astro';
+import CompaniesSlider from '../components/home/CompaniesSlider.astro';
+import About from '../components/home/About.astro';
+import OurServices from '../components/home/OurServices.astro';
+import Technologies from '../components/home/Technologies.astro';
+import CaseStudyCards from '../components/home/CaseStudyCards.astro';
+import CustomerFeedback from '../components/home/CustomerFeedback.astro';
+import Gallery from '../components/home/Gallery.astro';
+import HeroFooter from '../components/shared/HeroFooter.astro';
+
+import { HomeContentService } from '../services/HomeContentService';
+import { CommonContentService } from '../services/CommonContentService';
+
+const locale = Astro.url.searchParams.get('lang') || 'es';
+
+const hero = await HomeContentService.getHeroContent(locale);
+const customers = await HomeContentService.getCustomerContent();
+const about = await HomeContentService.getAboutContent();
+const services = await CommonContentService.getServicesContent(locale);
+const technologies = await HomeContentService.getTechnologiesContent(locale);
+const caseStudies = await HomeContentService.getCaseStudiesContent(locale);
+const customerFeedback = await HomeContentService.getCustomerFeedbackContent(locale);
+const gallery = await HomeContentService.getGalleryContent(locale);
+const footerHero = await CommonContentService.getHeroFooterContent(locale);
+const footer = await CommonContentService.getFooterContent();
+---
+
+<Layout title="CIT - Creative IT" footerContent={footer} locale={locale}>
+  <main>
+    <HeroHome heroContent={hero} locale={locale} />
+  </main>
+  <div class="scroll-reveal">
+    <CompaniesSlider customers={customers} locale={locale} />
+  </div>
+  <div class="scroll-reveal about-and-services">
+    <About aboutContent={about} locale={locale} />
+    <OurServices services={services} locale={locale} />
+    <div class="diamond"></div>
+  </div>
+  <div class="scroll-reveal">
+    <Technologies technologies={technologies} locale={locale} />
+  </div>
+  <div class="scroll-reveal">
+    <CaseStudyCards content={caseStudies} locale={locale} />
+  </div>
+  <div class="scroll-reveal">
+    <CustomerFeedback feedback={customerFeedback} locale={locale} />
+  </div>
+  <div class="scroll-reveal">
+    <Gallery gallery={gallery} locale={locale} />
+  </div>
+  <HeroFooter content={footerHero} locale={locale} />
+</Layout>
+
+<style lang="scss">
+  @use '../styles/variables.scss' as *;
+
+  .about-and-services {
+    position: relative;
+    background: linear-gradient(to bottom, $secondBackgroundColor 10%, $primaryBackgroundColor 90%);
+    padding-top: 6.2rem;
+    padding-inline: 1.5rem;
+    padding-bottom: 8.8rem;
+    overflow: hidden;
+  }
+
+  .diamond {
+    position: absolute;
+    width: 4.879rem;
+    height: 4.879rem;
+    bottom: 0;
+    left: 50%;
+    background: $primaryBackgroundColor;
+    transform: translate(-50%, 50%) rotate(-45deg);
+  }
+
+  @media screen and (min-width: 600px) {
+    .diamond { width: 6.223rem; height: 6.223rem; }
+  }
+</style>

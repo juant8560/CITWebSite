@@ -1,0 +1,326 @@
+---
+import Layout from '../layouts/Layout.astro';
+import HeroFooter from '../components/shared/HeroFooter.astro';
+import { AboutUsService } from '../services/AboutUsService';
+import { CommonContentService } from '../services/CommonContentService';
+import { CareerContentService } from '../services/CareerContentService';
+
+const locale = Astro.url.searchParams.get('lang') || 'es';
+const isEN = locale === 'en';
+
+const aboutHero = await AboutUsService.getHeroContent(locale);
+const metricContent = await AboutUsService.getMetricsContent(locale);
+const aboutMetrics = await AboutUsService.getMetrics(locale);
+const companyValue = await AboutUsService.getCompanyValues(locale);
+const coComment = await AboutUsService.getCoComment(locale);
+const employees = await CommonContentService.getEmployees(locale);
+const aboutCustomers = await AboutUsService.getCustomers(locale);
+const footerHero = await CommonContentService.getHeroFooterContent(locale);
+const footer = await CommonContentService.getFooterContent();
+const employeesContent = await CareerContentService.getEmployeesContent(locale);
+---
+
+<Layout title="CIT - About Us" footerContent={footer} locale={locale}>
+  <!-- Hero -->
+  <section class="about-hero" style={`background-image: url(${aboutHero?.imagePath})`}>
+    <div class="hero-overlay">
+      <h1 class="heading-large hero-title">{isEN ? (aboutHero?.titleEN || aboutHero?.titleES) : (aboutHero?.titleES || aboutHero?.titleEN)}</h1>
+      <p class="text-small hero-caption">{isEN ? (aboutHero?.captionEN || aboutHero?.captionES) : (aboutHero?.captionES || aboutHero?.captionEN)}</p>
+      <div class="btn-wrapper-gradient">
+        <a class="custom-btn" href="https://wkf.ms/3jKnYSm" target="_blank">{isEN ? 'Contact us' : 'Contáctenos'}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Metrics -->
+  <section class="metrics-section scroll-reveal">
+    <h2 class="heading-medium metrics-title">{isEN ? (metricContent?.titleEN || metricContent?.titleES) : (metricContent?.titleES || metricContent?.titleEN)}</h2>
+    <p class="text-small metrics-caption">{isEN ? (metricContent?.captionEN || metricContent?.captionES) : (metricContent?.captionES || metricContent?.captionEN)}</p>
+    <div class="metrics-grid">
+      {aboutMetrics.map((metric: any) => (
+        <div class="metric-card">
+          <h3 class="heading-large metric-value">{metric.prefix}{metric.value}+</h3>
+          <p class="text-small metric-desc">{isEN ? (metric.descriptionEN || metric.descriptionES) : (metric.descriptionES || metric.descriptionEN)}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Mission & Vision -->
+  {companyValue && (
+    <section class="mv-section scroll-reveal">
+      <div class="mv-content">
+        <div class="mv-text">
+          <div class="mv-block">
+            <h3 class="heading-medium">{isEN ? 'Our Mission' : 'Nuestra Misión'}</h3>
+            <p class="text-small">{isEN ? (companyValue.misionEN || companyValue.misionES) : (companyValue.misionES || companyValue.misionEN)}</p>
+          </div>
+          <div class="mv-block">
+            <h3 class="heading-medium">{isEN ? 'Our Vision' : 'Nuestra Visión'}</h3>
+            <p class="text-small">{isEN ? (companyValue.visionEN || companyValue.visionES) : (companyValue.visionES || companyValue.visionEN)}</p>
+          </div>
+        </div>
+        <div class="mv-image">
+          <img src={companyValue.imagePath} alt="Company" loading="lazy" />
+        </div>
+      </div>
+      {(companyValue.itemsES || companyValue.itemsEN) && (
+        <div class="values-list">
+          {(isEN ? (companyValue.itemsEN || companyValue.itemsES) : (companyValue.itemsES || companyValue.itemsEN)).map((item: string) => (
+            <div class="value-item">
+              <span class="value-dot"></span>
+              <p class="text-small">{item}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  )}
+
+  <!-- CEO Comment -->
+  {coComment && (
+    <section class="ceo-section scroll-reveal">
+      <div class="ceo-content">
+        <img src="/images/double-quotes.png" alt="Quotes" class="quotes-img" />
+        <p class="text-medium ceo-quote">{isEN ? (coComment.captionEN || coComment.captionES) : (coComment.captionES || coComment.captionEN)}</p>
+        <div class="ceo-info">
+          <h4 class="heading-small">{coComment.coName}</h4>
+          <p class="text-small">{isEN ? (coComment.chargeEN || coComment.chargeES) : (coComment.chargeES || coComment.chargeEN)}</p>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Team -->
+  {employees.length > 0 && (
+    <section class="team-section scroll-reveal">
+      <h2 class="heading-medium team-title">
+        {isEN
+          ? (employeesContent?.tittleEn || employeesContent?.tittleEs || 'Meet Our Team')
+          : (employeesContent?.tittleEs || employeesContent?.tittleEn || 'Nuestro Equipo')}
+      </h2>
+      <p class="text-small team-caption">
+        {isEN
+          ? (employeesContent?.captionEn || employeesContent?.captionEs || '')
+          : (employeesContent?.captionEs || employeesContent?.captionEn || '')}
+      </p>
+      <div class="team-grid">
+        {employees.map((emp: any) => (
+          <div class="team-card">
+            <div class="team-img">
+              <img src={emp.imagePath} alt={emp.fullName} loading="lazy" />
+            </div>
+            <h4 class="heading-small">{emp.fullName}</h4>
+            <p class="text-tiny">{isEN ? (emp.jobPositionEN || emp.jobPositionES) : (emp.jobPositionES || emp.jobPositionEN)}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- About Customers -->
+  {aboutCustomers && (
+    <section class="about-customers-section scroll-reveal">
+      <div class="customers-text">
+        <h2 class="heading-medium customers-title">{isEN ? (aboutCustomers.titleEN || aboutCustomers.titleES) : (aboutCustomers.titleES || aboutCustomers.titleEN)}</h2>
+        <h3 class="customers-subtitle">{isEN ? (aboutCustomers.titleSmallEN || aboutCustomers.titleSmallES) : (aboutCustomers.titleSmallES || aboutCustomers.titleSmallEN)}</h3>
+        <p class="text-small customers-desc">{isEN ? (aboutCustomers.captionEN || aboutCustomers.captionES) : (aboutCustomers.captionES || aboutCustomers.captionEN)}</p>
+      </div>
+      {aboutCustomers.customersImagePaths && (
+        <div class="marquee-wrapper">
+          <div class="marquee-track">
+            {aboutCustomers.customersImagePaths.map((img: string) => (
+              <div class="marquee-item">
+                <img src={img} alt="Customer" loading="lazy" />
+              </div>
+            ))}
+            {aboutCustomers.customersImagePaths.map((img: string) => (
+              <div class="marquee-item">
+                <img src={img} alt="Customer" loading="lazy" />
+              </div>
+            ))}
+            {aboutCustomers.customersImagePaths.map((img: string) => (
+              <div class="marquee-item">
+                <img src={img} alt="Customer" loading="lazy" />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+  )}
+
+  <HeroFooter content={footerHero} locale={locale} />
+</Layout>
+
+<style lang="scss">
+  @use '../styles/variables.scss' as *;
+
+  .about-hero {
+    position: relative;
+    width: 100%; height: 100vh; min-height: 50rem;
+    background-size: cover; background-position: center;
+    text-align: center;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    background: rgba($primaryBackgroundColor, 0.85);
+    display: grid; place-content: center; gap: 2rem;
+    padding: 2rem;
+  }
+
+  .hero-title { color: $primaryTextColor; }
+  .hero-caption { color: $secondaryTextColor; max-width: 60rem; margin: 0 auto; }
+
+  .btn-wrapper-gradient {
+    border-radius: 0.6rem;
+    background-image: linear-gradient(101deg, #F58523, #BD4E80, #2ABCDA);
+    width: 12.5rem; height: 4.3rem;
+    display: grid; place-items: center;
+    margin: 0 auto;
+  }
+  .custom-btn {
+    font-size: 1.4rem; color: $primaryTextColor;
+    width: 12.2rem; height: 4rem;
+    border-radius: 0.6rem; background-color: $primaryBackgroundColor;
+    background-size: 0; display: grid; place-items: center;
+    &:hover { background-image: linear-gradient(101deg, #F58523, #BD4E80, #2ABCDA); cursor: pointer; }
+  }
+
+  .metrics-section {
+    background-color: $secondBackgroundColor;
+    padding: 6rem 3.7rem; text-align: center;
+    color: $primaryTextColor;
+  }
+  .metrics-title { margin-bottom: 1.5rem; }
+  .metrics-caption { color: $secondaryTextColor; margin-bottom: 4rem; max-width: 60rem; margin-inline: auto; }
+  .metrics-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 3rem; }
+  .metric-card {
+    background: linear-gradient(332.04deg, #2B2B2B -9.13%, rgba(43,43,43,0.38) 93.1%);
+    border-radius: 10px; padding: 3rem 4rem; min-width: 20rem; text-align: center;
+  }
+  .metric-value {
+    background: linear-gradient(to right, $primaryColor, $secondaryColor, $thirdColor);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .metric-desc { color: $secondaryTextColor; }
+
+  .mv-section {
+    background-color: $primaryBackgroundColor; padding: 6rem 3.7rem; color: $primaryTextColor;
+  }
+  .mv-content { display: flex; flex-wrap: wrap; gap: 4rem; justify-content: center; margin-bottom: 4rem; }
+  .mv-text { display: flex; flex-direction: column; gap: 3rem; max-width: 50rem; }
+  .mv-block p { color: $secondaryTextColor; margin-top: 1rem; }
+  .mv-image { max-width: 40rem; border-radius: 1rem; overflow: hidden; img { width: 100%; height: auto; border-radius: 1rem; } }
+  .values-list { display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center; }
+  .value-item { display: flex; align-items: center; gap: 1rem; }
+  .value-dot { width: 8px; height: 8px; border-radius: 50%; background: $thirdColor; flex-shrink: 0; }
+  .value-item p { color: $secondaryTextColor; }
+
+  .ceo-section { background-color: $secondBackgroundColor; padding: 6rem 3.7rem; text-align: center; color: $primaryTextColor; }
+  .ceo-content { max-width: 80rem; margin: 0 auto; }
+  .quotes-img { width: 4rem; margin: 0 auto 2rem; }
+  .ceo-quote { color: $captionTextColor; margin-bottom: 2rem; font-style: italic; }
+  .ceo-info { h4 { color: $primaryTextColor; } p { color: $secondaryTextColor; } }
+
+  .team-section { background-color: $primaryBackgroundColor; padding: 6rem 3.7rem; text-align: center; color: $primaryTextColor; }
+  .team-title { margin-bottom: 1rem; }
+  .team-caption { color: $secondaryTextColor; margin-bottom: 4rem; }
+  .team-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; max-width: 90rem; margin: 0 auto; justify-items: center; }
+  .team-card {
+    text-align: center; width: 18rem;
+    background: linear-gradient(332.04deg, #2B2B2B -9.13%, rgba(43,43,43,0.38) 93.1%);
+    border-radius: 1.2rem;
+    padding: 2rem 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+  }
+  .team-img {
+    width: 12rem; height: 12rem; border-radius: 50%; overflow: hidden; margin: 0 auto 1rem;
+    img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+  }
+  .team-card:hover .team-img img { transform: scale(1.1); }
+  .team-card h4 { color: $primaryTextColor; margin-bottom: 0.4rem; }
+  .team-card p { color: $secondaryTextColor; }
+
+  .about-customers-section {
+    background-color: $secondBackgroundColor;
+    padding: 6rem 3.7rem;
+    text-align: center;
+    color: $primaryTextColor;
+    overflow: hidden;
+  }
+
+  .customers-text {
+    max-width: 60rem;
+    margin: 0 auto 3rem;
+  }
+
+  .customers-title {
+    margin-bottom: 0.6rem;
+  }
+
+  .customers-subtitle {
+    font-family: $headingFontLight;
+    font-style: italic;
+    font-size: 1.6rem;
+    color: $secondaryTextColor;
+    margin-bottom: 1.5rem;
+  }
+
+  .customers-desc {
+    color: $secondaryTextColor;
+  }
+
+  /* Marquee carousel */
+  .marquee-wrapper {
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  }
+
+  .marquee-track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    animation: marquee-scroll 25s linear infinite;
+    &:hover { animation-play-state: paused; }
+  }
+
+  @keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-100% / 3)); }
+  }
+
+  .marquee-item {
+    flex-shrink: 0;
+    width: 5rem;
+    height: 3.5rem;
+    display: grid;
+    place-items: center;
+    margin: 0 1.2rem;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: grayscale(100%) brightness(0.8) contrast(0.6);
+      transition: filter 0.3s;
+    }
+
+    &:hover img {
+      filter: none;
+    }
+  }
+
+  @media screen and (min-width: 600px) {
+    .team-grid { grid-template-columns: repeat(4, 1fr); gap: 3rem; }
+    .marquee-item { width: 8rem; height: 5rem; margin: 0 2rem; }
+  }
+</style>

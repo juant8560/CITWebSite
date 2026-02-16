@@ -1,0 +1,179 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import HeroFooter from '../../components/shared/HeroFooter.astro';
+import { ServiceDetailsService } from '../../services/ServiceDetailsService';
+import { CommonContentService } from '../../services/CommonContentService';
+import { HomeContentService } from '../../services/HomeContentService';
+
+export async function getStaticPaths() {
+  const services = await CommonContentService.getServicesContent('es');
+  return services.map((s: any) => ({
+    params: { sdid: s.id.toString() },
+  }));
+}
+
+const { sdid } = Astro.params;
+const id = Number(sdid);
+const locale = Astro.url.searchParams.get('lang') || 'es';
+const isEN = locale === 'en';
+
+const serviceInfo = await ServiceDetailsService.getServiceInfo(locale, id);
+const serviceDetail = await ServiceDetailsService.getServiceDetail(locale, id);
+const services = await CommonContentService.getServicesContent(locale);
+const customers = await HomeContentService.getCustomerContent();
+const footerHero = await CommonContentService.getHeroFooterContent(locale);
+const footer = await CommonContentService.getFooterContent();
+---
+
+<Layout title={`CIT - ${serviceInfo?.nameES || serviceInfo?.nameEN || 'Service'}`} footerContent={footer} locale={locale}>
+  <!-- Hero -->
+  <section class="sd-hero" style={serviceDetail?.pathImage ? `background-image: url(${serviceDetail.pathImage})` : ''}>
+    <div class="hero-overlay">
+      <div class="hero-content">
+        {serviceInfo?.logo && <img src={serviceInfo.logo} alt="Service" class="service-logo" />}
+        <h1 class="heading-large">{isEN ? (serviceInfo?.nameEN || serviceInfo?.nameES) : (serviceInfo?.nameES || serviceInfo?.nameEN)}</h1>
+        <p class="text-small">{isEN ? (serviceInfo?.descriptionEN || serviceInfo?.descriptionES) : (serviceInfo?.descriptionES || serviceInfo?.descriptionEN)}</p>
+        <div class="btn-wrapper-gradient">
+          <a class="custom-btn" href="https://wkf.ms/3jKnYSm" target="_blank">{isEN ? 'Get Started!' : '¡Contáctenos!'}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detail Content -->
+  {serviceDetail && (
+    <section class="sd-detail scroll-reveal">
+      <h2 class="heading-medium">{isEN ? (serviceDetail.heroTitleEN || serviceDetail.heroTitleES) : (serviceDetail.heroTitleES || serviceDetail.heroTitleEN)}</h2>
+      <p class="text-small">{isEN ? (serviceDetail.heroDescriptionEN || serviceDetail.heroDescriptionES) : (serviceDetail.heroDescriptionES || serviceDetail.heroDescriptionEN)}</p>
+    </section>
+  )}
+
+  <!-- How We Do -->
+  {serviceDetail && (serviceDetail.howWeDoTitleES || serviceDetail.howWeDoTitleEN) && (
+    <section class="how-we-do scroll-reveal">
+      <h2 class="heading-medium">{isEN ? (serviceDetail.howWeDoTitleEN || serviceDetail.howWeDoTitleES) : (serviceDetail.howWeDoTitleES || serviceDetail.howWeDoTitleEN)}</h2>
+      <p class="text-small">{isEN ? (serviceDetail.howWeDoDescriptionEN || serviceDetail.howWeDoDescriptionES) : (serviceDetail.howWeDoDescriptionES || serviceDetail.howWeDoDescriptionEN)}</p>
+      <div class="btn-wrapper-gradient" style="margin-top: 3rem;">
+        <a class="custom-btn" href="https://wkf.ms/3jKnYSm" target="_blank">{isEN ? 'Start Today' : 'Comienza hoy'}</a>
+      </div>
+    </section>
+  )}
+
+  <!-- Quote -->
+  {serviceDetail && (serviceDetail.quoteTitleES || serviceDetail.quoteTitleEN) && (
+    <section class="quote-section scroll-reveal">
+      <img src="/images/double-quotes.png" alt="Quotes" class="quotes-img" />
+      <p class="text-medium">{isEN ? (serviceDetail.quoteTitleEN || serviceDetail.quoteTitleES) : (serviceDetail.quoteTitleES || serviceDetail.quoteTitleEN)}</p>
+      <p class="text-small">{isEN ? (serviceDetail.quoteDescriptionEN || serviceDetail.quoteDescriptionES) : (serviceDetail.quoteDescriptionES || serviceDetail.quoteDescriptionEN)}</p>
+    </section>
+  )}
+
+  <!-- Customers - Marquee Banner -->
+  {customers.length > 0 && (
+    <section class="sd-customers scroll-reveal">
+      <h2 class="heading-medium">{isEN ? 'Companies that trust on us' : 'Empresas que confían en nosotros'}</h2>
+      <div class="marquee-wrapper">
+        <div class="marquee-track">
+          {customers.map((c: any) => (
+            <div class="customer-item">
+              <img src={c.imagePath} alt="Customer" loading="lazy" />
+            </div>
+          ))}
+          {customers.map((c: any) => (
+            <div class="customer-item">
+              <img src={c.imagePath} alt="Customer" loading="lazy" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Other Services -->
+  {services.length > 0 && (
+    <section class="other-services scroll-reveal">
+      <h2 class="heading-medium">{isEN ? 'Are you looking for a different service?' : '¿Estás buscando un servicio diferente?'}</h2>
+      <div class="other-services-grid">
+        {services.filter((s: any) => s.id !== id).map((s: any) => (
+          <a href={`/serviceDetails/${s.id}${isEN ? '?lang=en' : ''}`} class="other-service-card">
+            <img src={s.logo} alt={isEN ? (s.nameEN || s.nameES) : (s.nameES || s.nameEN)} width="50" />
+            <h4 class="heading-small">{isEN ? (s.nameEN || s.nameES) : (s.nameES || s.nameEN)}</h4>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <HeroFooter content={footerHero} locale={locale} />
+</Layout>
+
+<style lang="scss">
+  @use '../../styles/variables.scss' as *;
+
+  .sd-hero {
+    position: relative;
+    background-color: $primaryBackgroundColor;
+    background-size: cover;
+    background-position: center;
+    min-height: 50rem;
+    text-align: center;
+    color: $primaryTextColor;
+  }
+  .hero-overlay {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    background: rgba($primaryBackgroundColor, 0.85);
+    display: grid;
+    place-content: center;
+    padding: 12rem 3.7rem 6rem;
+  }
+  .hero-content { max-width: 80rem; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem; align-items: center; }
+  .service-logo { max-width: 10rem; height: auto; margin-bottom: 1rem; }
+  .hero-content p { color: $secondaryTextColor; }
+
+  .btn-wrapper-gradient { border-radius: 0.6rem; background-image: linear-gradient(101deg, #F58523, #BD4E80, #2ABCDA); width: 12.5rem; height: 4.3rem; display: grid; place-items: center; }
+  .custom-btn { font-size: 1.4rem; color: $primaryTextColor; width: 12.2rem; height: 4rem; border-radius: 0.6rem; background-color: $primaryBackgroundColor; background-size: 0; display: grid; place-items: center; &:hover { background-image: linear-gradient(101deg, #F58523, #BD4E80, #2ABCDA); cursor: pointer; } }
+
+  .sd-detail { background-color: $secondBackgroundColor; padding: 6rem 3.7rem; text-align: center; color: $primaryTextColor; h2 { margin-bottom: 2rem; } p { color: $secondaryTextColor; max-width: 80rem; margin: 0 auto; } }
+
+  .how-we-do { background-color: $primaryBackgroundColor; padding: 6rem 3.7rem; text-align: center; color: $primaryTextColor; h2 { margin-bottom: 2rem; } p { color: $secondaryTextColor; max-width: 80rem; margin: 0 auto; } }
+
+  .quote-section { background-color: $secondBackgroundColor; padding: 6rem 3.7rem; text-align: center; color: $primaryTextColor; max-width: 80rem; margin: 0 auto; }
+  .quotes-img { width: 4rem; margin: 0 auto 2rem; }
+  .quote-section .text-medium { color: $captionTextColor; margin-bottom: 1rem; font-style: italic; }
+  .quote-section .text-small { color: $secondaryTextColor; }
+
+  .sd-customers { background-color: $primaryBackgroundColor; padding: 6rem 3.7rem; text-align: center; color: $primaryTextColor; h2 { margin-bottom: 4rem; } overflow: hidden; }
+
+  .marquee-wrapper {
+    overflow: hidden;
+    width: 100%;
+    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  }
+  .marquee-track {
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+    width: max-content;
+    animation: marquee 25s linear infinite;
+    &:hover { animation-play-state: paused; }
+  }
+  .customer-item {
+    width: 12rem;
+    flex-shrink: 0;
+    filter: grayscale(100%);
+    transition: filter 0.3s;
+    img { width: 100%; object-fit: contain; }
+    &:hover { filter: none; }
+  }
+
+  .other-services { background-color: $secondBackgroundColor; padding: 6rem 3.7rem; text-align: center; color: $primaryTextColor; h2 { margin-bottom: 4rem; } }
+  .other-services-grid { display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center; }
+  .other-service-card {
+    background: linear-gradient(332.04deg, #2B2B2B -9.13%, rgba(43,43,43,0.38) 93.1%);
+    border-radius: 10px; padding: 2rem 3rem; display: flex; align-items: center; gap: 1.5rem;
+    transition: transform 0.3s; h4 { color: $primaryTextColor; }
+    &:hover { transform: translateX(0.5rem); }
+  }
+</style>

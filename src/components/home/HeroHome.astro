@@ -1,0 +1,183 @@
+---
+interface Props { heroContent: any; locale?: string; }
+const { heroContent, locale = 'es' } = Astro.props;
+const isEN = locale === 'en';
+const typeWriterPhrases = isEN
+  ? (heroContent?.subtitlePhrasesEN || heroContent?.subtitlePhrasesES || [])
+  : (heroContent?.subtitlePhrasesES || heroContent?.subtitlePhrasesEN || []);
+---
+
+<div class="hero" style={`background-image: url(${heroContent?.backgroundImage})`}>
+  <div class="wrapper">
+    <div class="heading-large hero-title">
+      <h1 class="main-title">
+        {heroContent?.titleEN || heroContent?.titleES}
+        <span class="creative-text">CREATIVE</span>
+      </h1>
+      <h2>
+        <span>{heroContent?.subtitleStartEN || heroContent?.subtitleStartES}</span>{' '}
+        <span>{heroContent?.subtitleEndES || heroContent?.subtitleEndEN}</span>{' '}
+        <span class="typewriter" id="typewriter"></span>
+      </h2>
+    </div>
+    <div class="text-small hero-description">
+      <p>{heroContent?.captionES || heroContent?.captionEN}</p>
+    </div>
+    <div class="btn-wrapper-gradient">
+      <a class="custom-btn" href="https://forms.monday.com/forms/c1b7794e1f9ef4b6851826edb9a11515" target="_blank">{isEN ? "Let's Talk" : 'Contáctenos'}</a>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ typeWriterPhrases }}>
+  // Simple typewriter effect
+  const el = document.getElementById('typewriter');
+  if (el && typeWriterPhrases.length > 0) {
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+
+    function type() {
+      const current = typeWriterPhrases[phraseIndex];
+      if (isDeleting) {
+        el.textContent = current.substring(0, charIndex - 1);
+        charIndex--;
+      } else {
+        el.textContent = current.substring(0, charIndex + 1);
+        charIndex++;
+      }
+
+      if (!isDeleting && charIndex === current.length) {
+        setTimeout(() => { isDeleting = true; type(); }, 2000);
+        return;
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        phraseIndex = (phraseIndex + 1) % typeWriterPhrases.length;
+      }
+
+      setTimeout(type, isDeleting ? 50 : 100);
+    }
+
+    setTimeout(type, 2650);
+  }
+</script>
+
+<style lang="scss">
+  @use '../../styles/variables.scss' as *;
+
+  .typewriter {
+    display: inline-block;
+    border-right: 2px solid $primaryColor;
+    animation: blink 1s step-end infinite;
+    min-width: 2px;
+  }
+
+  @keyframes blink {
+    50% { border-color: transparent; }
+  }
+
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 62rem;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    text-align: center;
+  }
+
+  .wrapper {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    background: rgba(31, 31, 31, 0.8);
+    padding: 12.6rem 1.4rem 2.4rem 1.4rem;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+
+    .hero-title {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .hero-description {
+      margin: 0 auto;
+      max-width: 62.9rem;
+      padding: 0 2.4rem;
+      color: #888888;
+      text-shadow: 0 0 4px $primaryBackgroundColor;
+    }
+  }
+
+  .main-title {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .creative-text {
+    background: linear-gradient(to right, #F58523 0%, #BD4444 50%, #2ABCDA 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: brightness(1.2) contrast(1.2);
+  }
+
+  .btn-wrapper-gradient {
+    border-radius: 0.6rem;
+    background-image: linear-gradient(101deg, #F58523, #BD4E80, #2ABCDA);
+    width: 12.5rem;
+    height: 4.3rem;
+    display: grid;
+    border: none;
+    place-items: center;
+    margin: 0 auto;
+  }
+
+  .custom-btn {
+    font-family: 'Lato', sans-serif;
+    font-size: 1.4rem;
+    text-align: center;
+    text-transform: capitalize;
+    color: $primaryTextColor;
+    width: 12.2rem;
+    height: 4rem;
+    border-radius: 0.6rem;
+    background-color: $primaryBackgroundColor;
+    background-size: 0;
+    display: grid;
+    place-items: center;
+    &:hover {
+      background-image: linear-gradient(101deg, #F58523, #BD4E80, #2ABCDA);
+      cursor: pointer;
+    }
+  }
+
+  @media screen and (min-width: 600px) {
+    .hero {
+      height: 84vh;
+      max-height: 75.1rem;
+      background-position: top;
+    }
+    .wrapper {
+      display: grid;
+      place-content: center;
+      gap: 3.2rem;
+      padding-top: 1rem;
+    }
+    .main-title { flex-direction: row; gap: 1.2rem; }
+    .hero-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 14rem;
+      gap: 1rem;
+    }
+    .hero-description { word-wrap: break-word; white-space: pre-line; }
+    .btn-wrapper-gradient { width: 14rem; height: 5rem; }
+    .custom-btn { width: 13.7rem; height: 4.7rem; }
+  }
+</style>

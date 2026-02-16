@@ -1,0 +1,273 @@
+---
+interface Props { locale?: string; }
+const { locale = 'es' } = Astro.props;
+const isEN = locale === 'en';
+
+const navLinks = [
+  { name: 'Our Services', nameES: 'Nuestros servicios', path: '/#services' },
+  { name: 'About Us', nameES: 'Acerca de nosotros', path: '/about-us' },
+  { name: 'Careers', nameES: 'Carrera', path: '/career' },
+  { name: 'Contact Us', nameES: 'Contáctenos', path: 'https://wkf.ms/3jKnYSm' },
+];
+---
+
+<header class="header" id="main-header">
+  <div class="logo">
+    <a href={`/${isEN ? '?lang=en' : ''}`}>
+      <img src="/images/creative-logo.png" alt="Creative Logo" width="161" height="auto" />
+    </a>
+  </div>
+
+  <!-- Mobile burger -->
+  <button class="burger-btn" id="burger-btn" aria-label="Menu">
+    <img src="/svg/burger-menu.svg" alt="Menu" width="22" height="22" id="burger-icon" />
+  </button>
+
+  <!-- Desktop nav -->
+  <nav class="nav-container" id="desktop-nav">
+    <ul class="nav-menu">
+      {navLinks.map((link) => {
+        const href = link.path.startsWith('http')
+          ? link.path
+          : (isEN ? `${link.path}${link.path.includes('?') ? '&' : '?'}lang=en` : link.path);
+        return (
+          <li class="text-small">
+            <a href={href} target={link.path.startsWith('http') ? '_blank' : ''}>{isEN ? link.name : link.nameES}</a>
+          </li>
+        );
+      })}
+    </ul>
+    <div class="text-small locale-wrapper">
+      <button class="drop-down" id="locale-btn">
+        <span id="locale-label">{isEN ? 'English' : 'Español'}</span>
+        <img src="/svg/arrow-down.svg" alt="Arrow" width="12" height="12" class="arrow-icon" id="arrow-icon" />
+      </button>
+    </div>
+  </nav>
+
+  <!-- Locale dropdown -->
+  <div class="locale-dropdown" id="locale-dropdown" style="display:none;">
+    <div class="dropdown-menu text-small">
+      <button data-locale="en">English</button>
+      <button data-locale="es">Español</button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobile-menu" style="display:none;">
+    <nav>
+      <ul>
+        {navLinks.map((link) => {
+          const href = link.path.startsWith('http')
+            ? link.path
+            : (isEN ? `${link.path}${link.path.includes('?') ? '&' : '?'}lang=en` : link.path);
+          return (
+            <li class="mobile-link">
+              <a href={href} target={link.path.startsWith('http') ? '_blank' : ''}>{isEN ? link.name : link.nameES}</a>
+            </li>
+          );
+        })}
+      </ul>
+      <div class="mobile-locale">
+        <button data-locale="en" class={isEN ? 'active' : ''}>English</button>
+        <button data-locale="es" class={!isEN ? 'active' : ''}>Español</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const burgerBtn = document.getElementById('burger-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const burgerIcon = document.getElementById('burger-icon') as HTMLImageElement;
+  const localeBtn = document.getElementById('locale-btn');
+  const localeDropdown = document.getElementById('locale-dropdown');
+  const arrowIcon = document.getElementById('arrow-icon');
+  let menuOpen = false;
+  let dropdownOpen = false;
+
+  burgerBtn?.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    if (mobileMenu) mobileMenu.style.display = menuOpen ? 'block' : 'none';
+    if (burgerIcon) burgerIcon.src = menuOpen ? '/svg/close-icon.svg' : '/svg/burger-menu.svg';
+  });
+
+  localeBtn?.addEventListener('click', () => {
+    dropdownOpen = !dropdownOpen;
+    if (localeDropdown) localeDropdown.style.display = dropdownOpen ? 'block' : 'none';
+    if (arrowIcon) arrowIcon.style.transform = dropdownOpen ? 'rotate(180deg)' : 'rotate(0)';
+  });
+
+  document.addEventListener('click', (e) => {
+    if (dropdownOpen && !localeBtn?.contains(e.target as Node) && !localeDropdown?.contains(e.target as Node)) {
+      dropdownOpen = false;
+      if (localeDropdown) localeDropdown.style.display = 'none';
+      if (arrowIcon) arrowIcon.style.transform = 'rotate(0)';
+    }
+  });
+
+  // Language switching via query param
+  document.querySelectorAll('[data-locale]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.getAttribute('data-locale');
+      const url = new URL(window.location.href);
+      if (lang === 'es') {
+        url.searchParams.delete('lang');
+      } else {
+        url.searchParams.set('lang', lang!);
+      }
+      window.location.href = url.toString();
+    });
+  });
+
+  // Scroll background
+  const header = document.getElementById('main-header');
+  window.addEventListener('scroll', () => {
+    if (header) {
+      header.style.background = window.scrollY > 50 ? '#1F1F1F' : '#1F1F1F';
+    }
+  });
+</script>
+
+<style lang="scss">
+  @use '../../styles/variables.scss' as *;
+
+  .logo {
+    position: relative;
+    a { background: none; }
+    img { height: auto; }
+  }
+
+  .header {
+    padding: 1.4rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: $primaryBackgroundColor;
+    color: $primaryTextColor;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    transition: all 0.4s ease-in-out;
+  }
+
+  .burger-btn {
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    padding: 0; margin: 0;
+    border: none;
+    background: none;
+    display: block;
+    &:hover, &:active, &:focus {
+      transform: rotate(180deg);
+      transition: transform 0.3s ease-in;
+    }
+  }
+
+  .nav-menu {
+    display: flex;
+    gap: 8rem;
+    li a { color: $primaryTextColor; }
+  }
+
+  .nav-container {
+    display: none;
+    align-items: center;
+    gap: 5rem;
+  }
+
+  .drop-down {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1rem;
+    border: transparent solid 2px;
+    border-radius: 0.4rem;
+    background-color: transparent;
+    color: $primaryTextColor;
+    cursor: pointer;
+  }
+
+  .locale-dropdown {
+    position: absolute;
+    right: 4rem;
+    top: 8rem;
+  }
+
+  .dropdown-menu {
+    display: flex;
+    gap: 0.8rem;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    background-color: #232323;
+    padding: 1.6rem;
+    border-radius: 0.5rem;
+    button {
+      background-color: transparent;
+      border: none;
+      color: $primaryTextColor;
+      font-size: 1.6rem;
+      font-weight: bold;
+      cursor: pointer;
+      &:hover { color: $thirdColor; }
+    }
+  }
+
+  .arrow-icon {
+    transition: all 0.2s ease-out;
+  }
+
+  .mobile-menu {
+    position: fixed;
+    top: 6rem;
+    left: 0; right: 0; bottom: 0;
+    background: $primaryBackgroundColor;
+    z-index: 999;
+    padding: 2rem 4rem;
+
+    ul { display: flex; flex-direction: column; gap: 2rem; }
+    .mobile-link a {
+      color: $primaryTextColor;
+      font-size: 1.8rem;
+      font-family: $mainFont;
+    }
+  }
+
+  .mobile-locale {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1.5rem;
+    button {
+      background: none;
+      border: 1px solid $thirdBackgroundColor;
+      color: $secondaryTextColor;
+      padding: 0.8rem 2rem;
+      border-radius: 0.4rem;
+      font-size: 1.4rem;
+      cursor: pointer;
+      &.active {
+        border-color: $thirdColor;
+        color: $primaryTextColor;
+      }
+    }
+  }
+
+  .locale-wrapper { position: relative; }
+
+  @media screen and (min-width: 600px) {
+    .burger-btn { display: none; }
+    .nav-container { display: flex; }
+    .mobile-menu { display: none !important; }
+    .logo {
+      margin-left: 16.4rem;
+      width: 16rem;
+      height: 3.2rem;
+    }
+    .nav-menu {
+      justify-content: space-evenly;
+      align-items: center;
+    }
+  }
+</style>

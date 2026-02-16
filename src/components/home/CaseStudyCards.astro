@@ -1,0 +1,359 @@
+---
+interface Props {
+  content: any[];
+  locale?: string;
+}
+
+const { content, locale = 'es' } = Astro.props;
+const isEN = locale === 'en';
+---
+
+<section class="cs-section">
+  <div class="wrapper">
+    <div class="header-container">
+      <div class="header-content">
+        <h2 class="heading-medium title">{isEN ? 'Case Studies' : 'Casos de éxito'}</h2>
+        <span class="text-small link">
+          <a href={`/caseStudies${isEN ? '?lang=en' : ''}`}>{isEN ? 'View all' : 'Ver todos'}</a>
+          <img src="/svg/arrow-right.svg" alt="Arrow right" width="16" height="16" />
+        </span>
+      </div>
+      <div class="slider-buttons" id="cs-slider-btns">
+        <button class="slider-btn left" id="cs-prev">
+          <img src="/svg/arrow-down.svg" alt="Prev" width="12.5" height="12.5" />
+        </button>
+        <button class="slider-btn right" id="cs-next">
+          <img src="/svg/arrow-down.svg" alt="Next" width="12.5" height="12.5" />
+        </button>
+      </div>
+    </div>
+
+    <div class="swiper cs-swiper">
+      <div class="swiper-wrapper">
+        {content.map((item: any) => (
+          <div class="swiper-slide">
+            <a href={`/caseStudies/${item.id}${isEN ? '?lang=en' : ''}`} class="card-anchor">
+              <div class="card-wrapper" style={`background-image: linear-gradient(180deg, rgba(39, 39, 39, 0.88) 0%, rgba(39, 39, 39, 0.89) 39.56%, rgba(39, 39, 39, 0.99) 69.49%, #272727 100%), url(${item.picture})`}>
+                <div class="card-inner">
+                  <span class="tag">{item.tagES || item.tagEN}</span>
+                  <div class="cs-logo">
+                    <img src={item.logo} alt={`${item.titleES || item.titleEN || ''} logo`} loading="lazy" />
+                  </div>
+                  <div class="container-info">
+                    <p class="text-small desc">
+                      {item.CaseStudyDetail && item.CaseStudyDetail.length > 0
+                        ? (isEN
+                          ? (item.CaseStudyDetail[0].heroTitleEN || item.CaseStudyDetail[0].heroTitleES || '')
+                          : (item.CaseStudyDetail[0].heroTitleES || item.CaseStudyDetail[0].heroTitleEN || '')
+                        ).substring(0, 110)
+                        : ''}
+                    </p>
+                    <span class="text-small read-more-link">
+                      <span>{isEN ? 'Read more' : 'Leer más'}</span>
+                      <img src="/svg/arrow-right.svg" alt="Arrow Right" width="18" height="18" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        ))}
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import Swiper from 'swiper';
+  import { Pagination } from 'swiper/modules';
+  import 'swiper/css';
+  import 'swiper/css/pagination';
+
+  const isMobile = window.innerWidth < 600;
+
+  const csSwiper = new Swiper('.cs-swiper', {
+    modules: [Pagination],
+    spaceBetween: isMobile ? 16 : 30,
+    slidesPerView: isMobile ? 1.2 : 3,
+    loop: true,
+    centeredSlides: true,
+    pagination: {
+      dynamicBullets: true,
+      type: 'bullets',
+      clickable: true,
+    },
+  });
+
+  document.getElementById('cs-next')?.addEventListener('click', () => csSwiper.slideNext());
+  document.getElementById('cs-prev')?.addEventListener('click', () => csSwiper.slidePrev());
+</script>
+
+<style lang="scss">
+  @use '../../styles/variables.scss' as *;
+
+  .cs-section {
+    padding: 4.8rem 0;
+    background-image: linear-gradient(254.65deg, #1F1F1F 0.1%, rgba(31, 31, 31, 0.82) 43.77%, rgba(31, 31, 31, 0.49) 70.69%), url('/images/bg-cit-dots.png');
+    background-repeat: no-repeat;
+    background-position: -22% 120%;
+    background-size: 32vw auto;
+  }
+
+  .wrapper {
+    max-width: 1180px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1.2px solid rgba(255, 255, 255, 0.1);
+    margin-inline: 3.4rem;
+    margin-bottom: 5.1rem;
+  }
+
+  .header-content {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .title {
+    color: $primaryTextColor;
+    text-transform: capitalize;
+    font-family: 'Nexa';
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 150%;
+  }
+
+  .link {
+    color: $primaryTextColor;
+    display: flex;
+    gap: 1.4rem;
+    align-items: center;
+    margin-top: 1rem;
+
+    a {
+      padding-bottom: 0;
+      color: $primaryTextColor;
+      text-decoration: none;
+    }
+  }
+
+  .card-anchor {
+    text-decoration: none;
+    display: block;
+    background: none;
+    padding-bottom: 0;
+  }
+
+  .card-wrapper {
+    background-size: cover;
+    background-position: center;
+    width: 32rem;
+    height: 52rem;
+    border-radius: 2rem;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+    margin: 0 auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 6rem;
+      height: 6rem;
+      background: linear-gradient(135deg, transparent 50%, #53BBE2 50%);
+      border-radius: 0 0 2rem 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  .card-inner {
+    height: 100%;
+    padding: 2.4rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'Lato';
+    font-weight: 700;
+    font-size: 14px;
+    color: $primaryTextColor;
+    text-transform: uppercase;
+    padding: 0.8rem 1.6rem;
+    background-color: $primaryBackgroundColor;
+    border-radius: 5px;
+    margin-bottom: 2.4rem;
+    width: fit-content;
+  }
+
+  .cs-logo {
+    margin-bottom: 3rem;
+    height: 6rem;
+    display: flex;
+    align-items: center;
+
+    img {
+      max-width: 14rem;
+      height: auto;
+      max-height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .container-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .desc {
+    color: $primaryTextColor;
+    opacity: 0.8;
+    font-size: 20px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    min-height: 14rem;
+  }
+
+  .read-more-link {
+    color: $primaryTextColor;
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+    font-family: 'Lato';
+    font-weight: 400;
+    margin-top: auto;
+
+    img {
+      transition: transform 0.3s ease;
+    }
+  }
+
+  .card-wrapper:hover .read-more-link img {
+    transform: translateX(5px);
+  }
+
+  .slider-buttons {
+    display: none;
+    gap: 0.8rem;
+  }
+
+  .slider-btn {
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.8rem;
+    background-color: #272727;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  .left {
+    transform: rotate(90deg);
+  }
+
+  .right {
+    transform: rotate(-90deg);
+  }
+
+  :global(.cs-swiper .swiper-pagination-bullets) {
+    transform: translate(-50%, 1.5rem) !important;
+  }
+
+  :global(.cs-swiper .swiper-pagination-bullet) {
+    width: 10px;
+    height: 10px;
+    background-color: $thirdBackgroundColor;
+    opacity: 1;
+  }
+
+  :global(.cs-swiper .swiper-pagination-bullet-active) {
+    background-color: $primaryTextColor;
+  }
+
+  @media screen and (max-width: 599px) {
+    .card-wrapper {
+      width: 85vw;
+      max-width: 30rem;
+      height: 50rem;
+    }
+
+    .card-inner {
+      padding: 1.8rem;
+    }
+
+    .desc {
+      font-size: 18px;
+      -webkit-line-clamp: 4;
+      min-height: 10rem;
+    }
+
+    .cs-logo {
+      margin-bottom: 3rem;
+
+      img {
+        max-width: 11rem;
+      }
+    }
+  }
+
+  @media screen and (min-width: 600px) {
+    .cs-section {
+      padding: 8rem 0;
+    }
+
+    .slider-buttons {
+      display: flex;
+    }
+
+    .card-wrapper {
+      width: 38rem;
+      height: 54rem;
+    }
+
+    .header-container {
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 1.5rem;
+      margin-bottom: 7.1rem;
+    }
+
+    .header-content {
+      justify-content: flex-start;
+      gap: 2.4rem;
+    }
+  }
+</style>

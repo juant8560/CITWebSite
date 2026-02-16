@@ -1,0 +1,216 @@
+---
+import Layout from '../layouts/Layout.astro';
+import HeroFooter from '../components/shared/HeroFooter.astro';
+import { CareerContentService } from '../services/CareerContentService';
+import { CommonContentService } from '../services/CommonContentService';
+
+const locale = Astro.url.searchParams.get('lang') || 'es';
+const isEN = locale === 'en';
+
+const hero = await CareerContentService.getHeroContent(locale);
+const benefits = await CareerContentService.getBenefits(locale);
+const officesPictures = await CareerContentService.getOfficesPictures();
+const employeesFeedback = await CareerContentService.getEmployeesFeedback(locale);
+const footerHero = await CareerContentService.getHeroFooterContent(locale);
+const footer = await CommonContentService.getFooterContent();
+
+const acronymES = ['Creatividad', 'Responsabilidad', 'Eficiencia', 'Agilidad', 'Talento', 'Innovación', 'Valores', 'Excelencia'];
+const acronymEN = ['Creativity', 'Reliability', 'Efficiency', 'Agility', 'Talent', 'Innovation', 'Values', 'Excellence'];
+const acronymWords = isEN ? acronymEN : acronymES;
+---
+
+<Layout title="CIT - Careers" footerContent={footer} locale={locale}>
+  <!-- Career Hero -->
+  <section class="career-hero">
+    <div class="hero-content">
+      <h1 class="heading-large">{isEN ? (hero?.titleEN || hero?.titleES) : (hero?.titleES || hero?.titleEN)}</h1>
+      <p class="text-small">{isEN ? (hero?.captionEN || hero?.captionES) : (hero?.captionES || hero?.captionEN)}</p>
+      <div class="btn-wrapper-gradient">
+        <a class="custom-btn" href="http://jobs.cit.hn/" target="_blank">{isEN ? 'Apply Now' : 'Aplica ahora'}</a>
+      </div>
+    </div>
+    <div class="hero-gallery">
+      <div class="hero-gallery-grid" id="career-gallery-grid">
+        {hero?.pathImages?.slice(0, 4).map((img: string, index: number) => (
+          <div class={`hero-pic hero-pic${index + 1}`}>
+            <img src={img} alt="Career" loading="lazy" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CREATIVE Acronym -->
+  <section class="acronym-section scroll-reveal">
+    <div class="acronym-container">
+      <div class="acronym-grid">
+        {acronymWords.map((word) => (
+          <div class="acronym-item">
+            <span class="acronym-letter">{word.charAt(0)}</span>
+            <span class="acronym-word">{word}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits -->
+  <section class="benefits-section scroll-reveal">
+    <h2 class="heading-medium">{isEN ? 'We offer' : 'Ofrecemos'}</h2>
+    <div class="benefits-grid">
+      {benefits.map((benefit: any) => (
+        <div class="benefit-card">
+          <p class="text-small">{isEN ? (benefit.nameEN || benefit.nameES) : (benefit.nameES || benefit.nameEN)}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Office Gallery -->
+  {officesPictures.length > 0 && (
+    <section class="offices-section">
+      <h2 class="heading-medium scroll-reveal">{isEN ? 'Our Offices' : 'Nuestras Oficinas'}</h2>
+      <div class="offices-grid">
+        {officesPictures.map((office: any) => (
+          <div class="office-img">
+            <img src={office.imagePath} alt="Office" loading="lazy" />
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Employee Feedback -->
+  {employeesFeedback.length > 0 && (
+    <section class="emp-feedback-section scroll-reveal">
+      <h2 class="heading-medium">{isEN ? 'What is like being part of Creative' : 'Cómo es ser parte de Creative'}</h2>
+      <div class="feedback-grid">
+        {employeesFeedback.map((fb: any) => (
+          <div class="emp-feedback-card">
+            <div class="emp-avatar">
+              <img src={fb.Employee?.imagePath} alt={fb.Employee?.fullName} />
+            </div>
+            <p class="text-small emp-comment">{isEN ? (fb.commentEN || fb.commentES) : (fb.commentES || fb.commentEN)}</p>
+            <h4 class="heading-small">{fb.Employee?.fullName}</h4>
+            <p class="text-tiny">{isEN ? (fb.Employee?.jobPositionEN || fb.Employee?.jobPositionES) : (fb.Employee?.jobPositionES || fb.Employee?.jobPositionEN)}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <HeroFooter content={footerHero} isCareer={true} locale={locale} />
+</Layout>
+
+<script>
+  // Bounce animation on top-left (pic1) and bottom-right (pic4) corners
+  const grid = document.getElementById('career-gallery-grid');
+  if (grid) {
+    const pics = grid.querySelectorAll('.hero-pic');
+    const bounceIndices = [0, 3]; // top-left and bottom-right
+
+    setInterval(() => {
+      bounceIndices.forEach(idx => {
+        const img = pics[idx]?.querySelector('img');
+        if (img) {
+          img.classList.add('animate__animated', 'animate__bounceIn');
+          setTimeout(() => {
+            img.classList.remove('animate__animated', 'animate__bounceIn');
+          }, 1000);
+        }
+      });
+    }, 3000);
+  }
+</script>
+
+<style lang="scss">
+  @use '../styles/variables.scss' as *;
+
+  .career-hero {
+    background-color: $primaryBackgroundColor;
+    padding: 10rem 3.7rem 6rem;
+    color: $primaryTextColor;
+    text-align: center;
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 4rem;
+  }
+
+  .hero-content {
+    max-width: 50rem; display: flex; flex-direction: column; gap: 2rem; justify-content: center;
+    p { color: $secondaryTextColor; }
+  }
+
+  .hero-gallery {
+    width: 100%;
+    max-width: 55rem;
+  }
+  .hero-gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .hero-pic {
+    border-radius: 0.6rem;
+    overflow: hidden;
+    img { width: 100%; height: 100%; object-fit: cover; border-radius: 0.6rem; }
+  }
+  .hero-pic1 { width: 100%; aspect-ratio: 3/2; }
+  .hero-pic2 { width: 90%; aspect-ratio: 3/2; }
+  .hero-pic3 { width: 100%; aspect-ratio: 3/2; }
+  .hero-pic4 { width: 85%; aspect-ratio: 4/5; }
+
+  .btn-wrapper-gradient {
+    border-radius: 0.6rem; background-image: linear-gradient(101deg, #F58523, #BD4E80, #2ABCDA);
+    width: 12.5rem; height: 4.3rem; display: grid; place-items: center; margin: 0 auto;
+  }
+  .custom-btn {
+    font-size: 1.4rem; color: $primaryTextColor; width: 12.2rem; height: 4rem;
+    border-radius: 0.6rem; background-color: $primaryBackgroundColor; background-size: 0;
+    display: grid; place-items: center;
+    &:hover { background-image: linear-gradient(101deg, #F58523, #BD4E80, #2ABCDA); cursor: pointer; }
+  }
+
+  .acronym-section { background-color: $secondBackgroundColor; padding: 8rem 3.7rem; }
+  .acronym-container { max-width: 120rem; margin: 0 auto; }
+  .acronym-grid { 
+     display: flex; flex-wrap: wrap; justify-content: center; gap: 3.5rem; 
+     align-items: baseline;
+  }
+  .acronym-item { display: flex; align-items: center; gap: 1rem; }
+  .acronym-letter {
+    font-family: 'Nexa'; font-size: 4rem; font-weight: 700;
+    background: linear-gradient(101deg, #F58523, #BD4E80, #2ABCDA);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .acronym-word { color: $primaryTextColor; font-size: 2rem; font-family: 'Nexa Light', sans-serif; }
+
+  .benefits-section { background-color: $primaryBackgroundColor; padding: 6rem 3.7rem; color: $primaryTextColor; text-align: center; h2 { margin-bottom: 4rem; } }
+  .benefits-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; max-width: 80rem; margin: 0 auto; }
+  .benefit-card {
+    background: linear-gradient(332.04deg, #2B2B2B -9.13%, rgba(43,43,43,0.38) 93.1%);
+    border-radius: 10px; padding: 2rem 3rem; min-width: 20rem; text-align: center;
+    p { color: $captionTextColor; }
+  }
+
+  .offices-section { background-color: $secondBackgroundColor; padding: 6rem 3.7rem; color: $primaryTextColor; text-align: center; h2 { margin-bottom: 4rem; } }
+  .offices-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr)); gap: 2rem; max-width: 100rem; margin: 0 auto; }
+  .office-img { border-radius: 1rem; overflow: hidden; aspect-ratio: 16/9; img { width: 100%; height: 100%; object-fit: cover; } }
+
+  .emp-feedback-section { background-color: $primaryBackgroundColor; padding: 6rem 3.7rem; color: $primaryTextColor; text-align: center; h2 { margin-bottom: 4rem; } }
+  .feedback-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 3rem; }
+  .emp-feedback-card {
+    background-color: $secondBackgroundColor; border-radius: 1rem; padding: 4rem 2rem 2rem; max-width: 35rem; position: relative; text-align: center;
+    h4 { color: $primaryTextColor; margin-top: 1rem; } p { color: $secondaryTextColor; }
+  }
+  .emp-avatar { width: 6rem; height: 6rem; border-radius: 50%; overflow: hidden; margin: -5rem auto 1rem; img { width: 100%; height: 100%; object-fit: cover; } }
+  .emp-comment { color: $captionTextColor !important; margin-bottom: 1rem; font-style: italic; }
+
+  @media screen and (min-width: 600px) {
+    .career-hero { flex-direction: row; text-align: left; }
+    .hero-gallery-grid { gap: 22.5px; }
+    .hero-pic1 { width: 32.89rem; height: 21.896rem; }
+    .hero-pic2 { width: 26.348rem; height: 17.535rem; transform: translateX(-3.5rem); }
+    .hero-pic3 { width: 36.07rem; height: 24.168rem; transform: translateY(-0.5rem); }
+    .hero-pic4 { width: 22.896rem; height: 28.438rem; transform: translate(-0.6rem, -0.8rem); }
+    .btn-wrapper-gradient { margin: 0; }
+  }
+</style>

@@ -1,0 +1,40 @@
+@font-face {
+  font-family: 'Nexa';
+  src: url('/fonts/NexaBold.otf');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nexa Light';
+  src: url('/fonts/NexaLight.otf');
+}
+
+@font-face {
+  font-family: 'Nasalization';
+  src: url('/fonts/nasalization-rg.otf');
+  font-weight: 400;
+  font-style: normal;
+}
+
+// CIT colors
+$primaryBackgroundColor: #1F1F1F;
+$secondBackgroundColor: #232323;
+$thirdBackgroundColor: #2F2F2F;
+
+$primaryTextColor: #fff;
+$secondaryTextColor: #888888;
+$captionTextColor: #d8d8d8;
+
+$primaryColor: #F58523;
+$secondaryColor: #BD4E80;
+$thirdColor: #2ABCDA;
+
+// CIT typography
+$mainFont: 'Lato', sans-serif;
+$headingFont: 'Nexa', sans-serif;
+$headingFontLight: 'Nexa Light', sans-serif;
+$headingSmallFont: 'Nasalization', sans-serif;
+
+// Breakpoints
+$breakpoint: '599px';

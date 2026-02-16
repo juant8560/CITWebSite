@@ -1,0 +1,159 @@
+---
+interface Props { gallery: any; locale?: string; }
+const { gallery, locale = 'es' } = Astro.props;
+const isEN = locale === 'en';
+const images = gallery?.images || [];
+const initialImages = images.slice(0, 4);
+---
+
+<section class="gallery-container">
+  <div class="description">
+    <h1 class="heading-medium title">{isEN ? 'Come work with us' : 'Trabaja con nosotros'}</h1>
+    <p class="text-small description-paragraph">
+      {isEN ? (gallery?.captionEN || gallery?.captionES) : (gallery?.captionES || gallery?.captionEN)}
+    </p>
+    <a class="gallery-link" href="http://jobs.cit.hn/" target="_blank">
+      <button class="gallery-button">{isEN ? 'Learn more' : 'Ver más'}</button>
+    </a>
+  </div>
+
+  <div class="gallery-wrapper">
+    <div class="gallery-grid" id="gallery-grid">
+      {initialImages.map((image: string, index: number) => (
+        <div class={`picture picture${index + 1}`}>
+          <div class="transition-image">
+            <img src={image} alt="Gallery" loading="lazy" />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ allImages: images }}>
+  if (allImages.length > 4) {
+    const grid = document.getElementById('gallery-grid');
+    const showGroups = [
+      [allImages[0], allImages[1], allImages[2], allImages[3]],
+      [allImages[4], allImages[1], allImages[2], allImages[5] || allImages[0]],
+      [allImages[4], allImages[6] || allImages[2], allImages[7] || allImages[3], allImages[5] || allImages[0]],
+    ];
+    let groupIndex = 0;
+
+    // Indices that should have a delay: 1 = top-right, 2 = bottom-left
+    const delayedIndices = new Set([1, 2]);
+    const STAGGER_DELAY = 600; // ms
+
+    function animateImage(img, src) {
+      img.classList.add('animate__animated', 'animate__bounceIn');
+      img.setAttribute('src', src);
+      setTimeout(() => {
+        img.classList.remove('animate__animated', 'animate__bounceIn');
+      }, 1000);
+    }
+
+    setInterval(() => {
+      groupIndex = (groupIndex + 1) % showGroups.length;
+      const imgs = grid?.querySelectorAll('img');
+      if (imgs) {
+        showGroups[groupIndex].forEach((src, i) => {
+          if (imgs[i] && src) {
+            if (delayedIndices.has(i)) {
+              // Top-right and bottom-left get a staggered delay
+              setTimeout(() => animateImage(imgs[i], src), STAGGER_DELAY);
+            } else {
+              // Top-left and bottom-right change immediately
+              animateImage(imgs[i], src);
+            }
+          }
+        });
+      }
+    }, 3000);
+  }
+</script>
+
+<style lang="scss">
+  @use '../../styles/variables.scss' as *;
+
+  .gallery-container {
+    background-color: $primaryBackgroundColor;
+    padding-inline: 3.7rem;
+    padding-top: 8rem;
+    padding-bottom: 7.9rem;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+    flex-wrap: wrap;
+    gap: 4rem;
+  }
+
+  .title { color: $primaryTextColor; text-align: left; }
+
+  .transition-image {
+    width: 100%; height: 100%;
+    background-color: $thirdBackgroundColor;
+    img { width: 100%; height: 100%; object-fit: cover; border-radius: 0.6rem; }
+  }
+
+  .description {
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+
+  .description-paragraph {
+    color: $secondaryTextColor;
+    max-width: 40.4rem;
+  }
+
+  .gallery-button {
+    background-color: transparent;
+    border: 1px solid $thirdColor;
+    border-radius: 5px;
+    width: 12.5rem;
+    height: 3.7rem;
+    color: $primaryTextColor;
+    cursor: pointer;
+  }
+
+  .gallery-link {
+    background: none !important;
+    width: 12.5rem;
+    height: 3.7rem;
+  }
+
+  .gallery-wrapper {
+    position: relative;
+    width: 100%;
+    height: auto;
+    max-width: 61.6rem;
+    max-height: 48rem;
+    overflow: hidden;
+    border-radius: 0.6rem;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .picture { border-radius: 0.6rem; overflow: hidden; }
+  .picture1 { width: 100%; aspect-ratio: 3/2; }
+  .picture2 { width: 90%; aspect-ratio: 3/2; }
+  .picture3 { width: 100%; aspect-ratio: 3/2; }
+  .picture4 { width: 85%; aspect-ratio: 4/5; }
+
+  @media screen and (min-width: 600px) {
+    .gallery-container { flex-direction: row; justify-content: center; gap: 9rem; }
+    .description { width: 40%; max-width: 40.4rem; gap: 3rem; display: grid; place-content: center; }
+    .description-paragraph { margin-bottom: 1rem; }
+    .gallery-wrapper { width: 40%; overflow-x: hidden; }
+    .gallery-grid { gap: 22.5px; }
+    .picture1 { width: 32.89rem; height: 21.896rem; aspect-ratio: auto; }
+    .picture2 { width: 26.348rem; height: 17.535rem; transform: translateX(-3.5rem); aspect-ratio: auto; }
+    .picture3 { width: 36.07rem; height: 24.168rem; transform: translateY(-0.5rem); aspect-ratio: auto; }
+    .picture4 { width: 22.896rem; height: 28.438rem; transform: translate(-0.6rem, -0.8rem); aspect-ratio: auto; }
+    .gallery-button { width: 14.1rem; height: 5.1rem; }
+  }
+</style>
