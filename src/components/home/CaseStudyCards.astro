@@ -14,7 +14,7 @@ const isEN = locale === 'en';
       <div class="header-content">
         <h2 class="heading-medium title">{isEN ? 'Case Studies' : 'Casos de éxito'}</h2>
         <span class="text-small link">
-          <a href={`/caseStudies${isEN ? '?lang=en' : ''}`}>{isEN ? 'View all' : 'Ver todos'}</a>
+          <a href={`/${locale}/caseStudies`}>{isEN ? 'View all' : 'Ver todos'}</a>
           <img src="/svg/arrow-right.svg" alt="Arrow right" width="16" height="16" />
         </span>
       </div>
@@ -32,7 +32,7 @@ const isEN = locale === 'en';
       <div class="swiper-wrapper">
         {content.map((item: any) => (
           <div class="swiper-slide">
-            <a href={`/caseStudies/${item.id}${isEN ? '?lang=en' : ''}`} class="card-anchor">
+            <a href={`/${locale}/caseStudies/${item.id}`} class="card-anchor">
               <div class="card-wrapper" style={`background-image: linear-gradient(180deg, rgba(39, 39, 39, 0.88) 0%, rgba(39, 39, 39, 0.89) 39.56%, rgba(39, 39, 39, 0.99) 69.49%, #272727 100%), url(${item.picture})`}>
                 <div class="card-inner">
                   <span class="tag">{item.tagES || item.tagEN}</span>
@@ -90,7 +90,7 @@ const isEN = locale === 'en';
 </script>
 
 <style lang="scss">
-  @use '../../styles/variables.scss' as *;
+  @use '@styles/variables.scss' as *;
 
   .cs-section {
     padding: 4.8rem 0;

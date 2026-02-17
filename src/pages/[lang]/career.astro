@@ -1,10 +1,18 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import HeroFooter from '../components/shared/HeroFooter.astro';
-import { CareerContentService } from '../services/CareerContentService';
-import { CommonContentService } from '../services/CommonContentService';
+import Layout from '@layouts/Layout.astro';
+import HeroFooter from '@components/shared/HeroFooter.astro';
+import { CareerContentService } from '@services/CareerContentService';
+import { CommonContentService } from '@services/CommonContentService';
 
-const locale = Astro.url.searchParams.get('lang') || 'es';
+export async function getStaticPaths() {
+  return [
+    { params: { lang: 'en' } },
+    { params: { lang: 'es' } },
+  ];
+}
+
+const { lang } = Astro.params;
+const locale = lang || 'es';
 const isEN = locale === 'en';
 
 const hero = await CareerContentService.getHeroContent(locale);
@@ -124,7 +132,7 @@ const acronymWords = isEN ? acronymEN : acronymES;
 </script>
 
 <style lang="scss">
-  @use '../styles/variables.scss' as *;
+  @use '@styles/variables.scss' as *;
 
   .career-hero {
     background-color: $primaryBackgroundColor;
@@ -181,7 +189,7 @@ const acronymWords = isEN ? acronymEN : acronymES;
     background: linear-gradient(101deg, #F58523, #BD4E80, #2ABCDA);
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   }
-  .acronym-word { color: $primaryTextColor; font-size: 2rem; font-family: 'Nexa Light', sans-serif; }
+  .acronym-word { color: $primaryTextColor; font-size: 1.2rem; font-family: 'Nexa Light', sans-serif; }
 
   .benefits-section { background-color: $primaryBackgroundColor; padding: 6rem 3.7rem; color: $primaryTextColor; text-align: center; h2 { margin-bottom: 4rem; } }
   .benefits-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; max-width: 80rem; margin: 0 auto; }

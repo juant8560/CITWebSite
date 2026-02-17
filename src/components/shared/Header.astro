@@ -13,7 +13,7 @@ const navLinks = [
 
 <header class="header" id="main-header">
   <div class="logo">
-    <a href={`/${isEN ? '?lang=en' : ''}`}>
+    <a href={`/${locale}/`}>
       <img src="/images/creative-logo.png" alt="Creative Logo" width="161" height="auto" />
     </a>
   </div>
@@ -29,7 +29,7 @@ const navLinks = [
       {navLinks.map((link) => {
         const href = link.path.startsWith('http')
           ? link.path
-          : (isEN ? `${link.path}${link.path.includes('?') ? '&' : '?'}lang=en` : link.path);
+          : (link.path.startsWith('/') ? `/${locale}${link.path}` : `/${locale}/${link.path}`);
         return (
           <li class="text-small">
             <a href={href} target={link.path.startsWith('http') ? '_blank' : ''}>{isEN ? link.name : link.nameES}</a>
@@ -60,7 +60,7 @@ const navLinks = [
         {navLinks.map((link) => {
           const href = link.path.startsWith('http')
             ? link.path
-            : (isEN ? `${link.path}${link.path.includes('?') ? '&' : '?'}lang=en` : link.path);
+            : (link.path.startsWith('/') ? `/${locale}${link.path}` : `/${locale}/${link.path}`);
           return (
             <li class="mobile-link">
               <a href={href} target={link.path.startsWith('http') ? '_blank' : ''}>{isEN ? link.name : link.nameES}</a>
@@ -106,17 +106,21 @@ const navLinks = [
     }
   });
 
-  // Language switching via query param
+  // Language switching via path
   document.querySelectorAll('[data-locale]').forEach(btn => {
     btn.addEventListener('click', () => {
-      const lang = btn.getAttribute('data-locale');
-      const url = new URL(window.location.href);
-      if (lang === 'es') {
-        url.searchParams.delete('lang');
+      const newLang = btn.getAttribute('data-locale');
+      const currentPath = window.location.pathname;
+      const pathParts = currentPath.split('/').filter(part => part !== '');
+      
+      // Assume the first part is the locale if it's 'en' or 'es'
+      if (pathParts.length > 0 && (pathParts[0] === 'en' || pathParts[0] === 'es')) {
+        pathParts[0] = newLang!;
       } else {
-        url.searchParams.set('lang', lang!);
+        pathParts.unshift(newLang!);
       }
-      window.location.href = url.toString();
+      
+      window.location.href = '/' + pathParts.join('/') + window.location.search;
     });
   });
 
@@ -130,7 +134,7 @@ const navLinks = [
 </script>
 
 <style lang="scss">
-  @use '../../styles/variables.scss' as *;
+  @use '@styles/variables.scss' as *;
 
   .logo {
     position: relative;

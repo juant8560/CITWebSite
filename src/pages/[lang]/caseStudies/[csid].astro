@@ -1,20 +1,23 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import HeroFooter from '../../components/shared/HeroFooter.astro';
-import { CaseStudyDetailService, CaseStudiesContentService } from '../../services/CaseStudiesService';
-import { CommonContentService } from '../../services/CommonContentService';
+import Layout from '@layouts/Layout.astro';
+import HeroFooter from '@components/shared/HeroFooter.astro';
+import { CaseStudyDetailService, CaseStudiesContentService } from '@services/CaseStudiesService';
+import { CommonContentService } from '@services/CommonContentService';
 
 export async function getStaticPaths() {
   const caseStudies = await CaseStudiesContentService.getCaseStudies('es');
-  return caseStudies.map((cs: any) => ({
-    params: { csid: cs.id.toString() },
-  }));
+  const langs = ['en', 'es'];
+  return langs.flatMap((lang) => 
+    caseStudies.map((cs: any) => ({
+      params: { lang, csid: cs.id.toString() },
+    }))
+  );
 }
 
-const { csid } = Astro.params;
-const id = Number(csid);
-const locale = Astro.url.searchParams.get('lang') || 'es';
+const { lang, csid } = Astro.params;
+const locale = lang || 'es';
 const isEN = locale === 'en';
+const id = Number(csid);
 
 const caseStudyInfo = await CaseStudyDetailService.getCaseStudyInfo(id);
 const detailContent = await CaseStudyDetailService.getCaseStudyDetailContent(locale, id);
@@ -217,7 +220,7 @@ const deliveredServices = detailContent?.idsServices
       <h2 class="heading-medium section-title">{isEN ? 'Delivered Services' : 'Servicios Entregados'}</h2>
       <div class="services-grid">
         {deliveredServices.map((s: any) => (
-          <a href={`/serviceDetails/${s.id}${isEN ? '?lang=en' : ''}`} class="service-card">
+          <a href={`/${locale}/serviceDetails/${s.id}`} class="service-card">
             <img src={s.logo} alt={isEN ? (s.nameEN || s.nameES) : (s.nameES || s.nameEN)} />
             <div class="service-card-info">
               <h4 class="heading-small">{isEN ? (s.nameEN || s.nameES) : (s.nameES || s.nameEN)}</h4>
@@ -233,7 +236,7 @@ const deliveredServices = detailContent?.idsServices
 </Layout>
 
 <style lang="scss">
-  @use '../../styles/variables.scss' as *;
+  @use '@styles/variables.scss' as *;
 
   /* ── Section title ── */
   .section-title {

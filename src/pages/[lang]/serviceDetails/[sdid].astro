@@ -1,21 +1,24 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import HeroFooter from '../../components/shared/HeroFooter.astro';
-import { ServiceDetailsService } from '../../services/ServiceDetailsService';
-import { CommonContentService } from '../../services/CommonContentService';
-import { HomeContentService } from '../../services/HomeContentService';
+import Layout from '@layouts/Layout.astro';
+import HeroFooter from '@components/shared/HeroFooter.astro';
+import { ServiceDetailsService } from '@services/ServiceDetailsService';
+import { CommonContentService } from '@services/CommonContentService';
+import { HomeContentService } from '@services/HomeContentService';
 
 export async function getStaticPaths() {
   const services = await CommonContentService.getServicesContent('es');
-  return services.map((s: any) => ({
-    params: { sdid: s.id.toString() },
-  }));
+  const langs = ['en', 'es'];
+  return langs.flatMap((lang) => 
+    services.map((s: any) => ({
+      params: { lang, sdid: s.id.toString() },
+    }))
+  );
 }
 
-const { sdid } = Astro.params;
-const id = Number(sdid);
-const locale = Astro.url.searchParams.get('lang') || 'es';
+const { lang, sdid } = Astro.params;
+const locale = lang || 'es';
 const isEN = locale === 'en';
+const id = Number(sdid);
 
 const serviceInfo = await ServiceDetailsService.getServiceInfo(locale, id);
 const serviceDetail = await ServiceDetailsService.getServiceDetail(locale, id);
@@ -95,7 +98,7 @@ const footer = await CommonContentService.getFooterContent();
       <h2 class="heading-medium">{isEN ? 'Are you looking for a different service?' : '¿Estás buscando un servicio diferente?'}</h2>
       <div class="other-services-grid">
         {services.filter((s: any) => s.id !== id).map((s: any) => (
-          <a href={`/serviceDetails/${s.id}${isEN ? '?lang=en' : ''}`} class="other-service-card">
+          <a href={`/${locale}/serviceDetails/${s.id}`} class="other-service-card">
             <img src={s.logo} alt={isEN ? (s.nameEN || s.nameES) : (s.nameES || s.nameEN)} width="50" />
             <h4 class="heading-small">{isEN ? (s.nameEN || s.nameES) : (s.nameES || s.nameEN)}</h4>
           </a>
@@ -108,7 +111,7 @@ const footer = await CommonContentService.getFooterContent();
 </Layout>
 
 <style lang="scss">
-  @use '../../styles/variables.scss' as *;
+  @use '@styles/variables.scss' as *;
 
   .sd-hero {
     position: relative;

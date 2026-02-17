@@ -16,7 +16,7 @@ const isEN = locale === 'en';
           <h3 class="heading-small">{isEN ? (service.nameEN || service.nameES) : (service.nameES || service.nameEN)}</h3>
           <p class="text-tiny desc">{isEN ? (service.descriptionEN || service.descriptionES) : (service.descriptionES || service.descriptionEN)}</p>
           <span class="text-tiny link">
-            <a href={`/serviceDetails/${service.id}${isEN ? '?lang=en' : ''}`}>{isEN ? 'Check it out' : 'Ver más'}</a>
+            <a href={`/${locale}/serviceDetails/${service.id}`}>{isEN ? 'Check it out' : 'Ver más'}</a>
             <img src="/svg/arrow-right.svg" alt="Arrow right" width="12" height="12" />
           </span>
         </div>
@@ -26,7 +26,7 @@ const isEN = locale === 'en';
 </section>
 
 <style lang="scss">
-  @use '../../styles/variables.scss' as *;
+  @use '@styles/variables.scss' as *;
 
   .services-section {
     position: relative;

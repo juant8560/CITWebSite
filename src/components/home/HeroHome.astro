@@ -63,7 +63,7 @@ const typeWriterPhrases = isEN
 </script>
 
 <style lang="scss">
-  @use '../../styles/variables.scss' as *;
+  @use '@styles/variables.scss' as *;
 
   .typewriter {
     display: inline-block;
@@ -114,8 +114,12 @@ const typeWriterPhrases = isEN
 
   .main-title {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 1rem;
+    margin-bottom: 0.5rem;
   }
 
   .creative-text {
@@ -124,6 +128,8 @@ const typeWriterPhrases = isEN
     background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: brightness(1.2) contrast(1.2);
+    font-size: 0.9em;
+    white-space: nowrap;
   }
 
   .btn-wrapper-gradient {
@@ -168,7 +174,7 @@ const typeWriterPhrases = isEN
       gap: 3.2rem;
       padding-top: 1rem;
     }
-    .main-title { flex-direction: row; gap: 1.2rem; }
+    .main-title { gap: 1.2rem; margin-bottom: 0; }
     .hero-title {
       display: flex;
       flex-direction: column;

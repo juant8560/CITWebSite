@@ -1,11 +1,20 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import HeroFooter from '../components/shared/HeroFooter.astro';
-import { AboutUsService } from '../services/AboutUsService';
-import { CommonContentService } from '../services/CommonContentService';
-import { CareerContentService } from '../services/CareerContentService';
+import { Image } from 'astro:assets';
+import Layout from '@layouts/Layout.astro';
+import HeroFooter from '@components/shared/HeroFooter.astro';
+import { AboutUsService } from '@services/AboutUsService';
+import { CommonContentService } from '@services/CommonContentService';
+import { CareerContentService } from '@services/CareerContentService';
 
-const locale = Astro.url.searchParams.get('lang') || 'es';
+export async function getStaticPaths() {
+  return [
+    { params: { lang: 'en' } },
+    { params: { lang: 'es' } },
+  ];
+}
+
+const { lang } = Astro.params;
+const locale = lang || 'es';
 const isEN = locale === 'en';
 
 const aboutHero = await AboutUsService.getHeroContent(locale);
@@ -108,7 +117,14 @@ const employeesContent = await CareerContentService.getEmployeesContent(locale);
         {employees.map((emp: any) => (
           <div class="team-card">
             <div class="team-img">
-              <img src={emp.imagePath} alt={emp.fullName} loading="lazy" />
+              <Image 
+                src={emp.imagePath} 
+                alt={emp.fullName} 
+                width={120} 
+                height={120}
+                format="webp"
+                quality="mid"
+              />
             </div>
             <h4 class="heading-small">{emp.fullName}</h4>
             <p class="text-tiny">{isEN ? (emp.jobPositionEN || emp.jobPositionES) : (emp.jobPositionES || emp.jobPositionEN)}</p>
@@ -154,7 +170,7 @@ const employeesContent = await CareerContentService.getEmployeesContent(locale);
 </Layout>
 
 <style lang="scss">
-  @use '../styles/variables.scss' as *;
+  @use '@styles/variables.scss' as *;
 
   .about-hero {
     position: relative;
@@ -289,13 +305,12 @@ const employeesContent = await CareerContentService.getEmployeesContent(locale);
     display: flex;
     align-items: center;
     width: max-content;
-    animation: marquee-scroll 25s linear infinite;
     &:hover { animation-play-state: paused; }
   }
 
   @keyframes marquee-scroll {
     0% { transform: translateX(0); }
-    100% { transform: translateX(calc(-100% / 3)); }
+    100% { transform: translateX(calc(-100% / 5)); }
   }
 
   .marquee-item {
@@ -307,8 +322,8 @@ const employeesContent = await CareerContentService.getEmployeesContent(locale);
     margin: 0 1.2rem;
 
     img {
-      max-width: 100%;
-      max-height: 100%;
+      max-width: 80%;
+      max-height: 80%;
       object-fit: contain;
       filter: grayscale(100%) brightness(0.8) contrast(0.6);
       transition: filter 0.3s;
