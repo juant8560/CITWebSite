@@ -103,7 +103,7 @@ function getPosition(index: number, total: number) {
 
   .tech-section-wrapper {
     background-color: $secondBackgroundColor;
-    padding-inline: 3.7rem;
+    padding-inline: 1.5rem;
     padding-block: 8.8rem;
     color: $primaryTextColor;
   }
@@ -180,7 +180,8 @@ function getPosition(index: number, total: number) {
   .inner-ring {
     @extend .rings;
     aspect-ratio: 1 / 1;
-    width: 40vw; max-width: 16rem;
+    width: 40%; max-width: 16rem;
+    min-width: 12rem;
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
@@ -192,7 +193,8 @@ function getPosition(index: number, total: number) {
   .mid-ring {
     @extend .rings;
     aspect-ratio: 1 / 1;
-    width: 60vw; max-width: 25rem;
+    width: 70%; max-width: 25rem;
+    min-width: 18rem;
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
@@ -205,7 +207,8 @@ function getPosition(index: number, total: number) {
     @extend .rings;
     position: relative;
     aspect-ratio: 1 / 1;
-    width: 80vw; max-width: 35rem;
+    width: 95%; max-width: 35rem;
+    min-width: 26rem;
     margin: 0 auto;
     border: 2px solid $primaryColor;
     z-index: 1;
@@ -287,6 +290,7 @@ function getPosition(index: number, total: number) {
   }
 
   @media screen and (min-width: 600px) {
+    .tech-section-wrapper { padding-inline: 3.7rem; }
     .description { max-height: 38rem; }
     .title { margin-bottom: 5rem; }
     .logo { width: 9.965rem; height: 10.2rem; }

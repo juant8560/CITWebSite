@@ -102,7 +102,7 @@ const employeesContent = await CareerContentService.getEmployeesContent(locale);
 
   <!-- Team -->
   {employees.length > 0 && (
-    <section class="team-section scroll-reveal">
+    <section class="team-section">
       <h2 class="heading-medium team-title">
         {isEN
           ? (employeesContent?.tittleEn || employeesContent?.tittleEs || 'Meet Our Team')
@@ -241,26 +241,21 @@ const employeesContent = await CareerContentService.getEmployeesContent(locale);
   .ceo-quote { color: $captionTextColor; margin-bottom: 2rem; font-style: italic; }
   .ceo-info { h4 { color: $primaryTextColor; } p { color: $secondaryTextColor; } }
 
-  .team-section { background-color: $primaryBackgroundColor; padding: 6rem 3.7rem; text-align: center; color: $primaryTextColor; }
+  .team-section { background-color: $primaryBackgroundColor; padding: 6rem 1.5rem; text-align: center; color: $primaryTextColor; }
   .team-title { margin-bottom: 1rem; }
   .team-caption { color: $secondaryTextColor; margin-bottom: 4rem; }
-  .team-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; max-width: 90rem; margin: 0 auto; justify-items: center; }
+  .team-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; max-width: 90rem; margin: 0 auto; justify-items: center; }
   .team-card {
-    text-align: center; width: 18rem;
+    text-align: center; width: 100%; max-width: 20rem;
     background: linear-gradient(332.04deg, #2B2B2B -9.13%, rgba(43,43,43,0.38) 93.1%);
     border-radius: 1.2rem;
     padding: 2rem 1.5rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    &:hover {
-      transform: scale(1.05);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    }
+    will-change: transform;
   }
   .team-img {
     width: 12rem; height: 12rem; border-radius: 50%; overflow: hidden; margin: 0 auto 1rem;
-    img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+    img { width: 100%; height: 100%; object-fit: cover; }
   }
-  .team-card:hover .team-img img { transform: scale(1.1); }
   .team-card h4 { color: $primaryTextColor; margin-bottom: 0.4rem; }
   .team-card p { color: $secondaryTextColor; }
 
@@ -335,6 +330,7 @@ const employeesContent = await CareerContentService.getEmployeesContent(locale);
   }
 
   @media screen and (min-width: 600px) {
+    .team-section { padding: 8rem 3.7rem; }
     .team-grid { grid-template-columns: repeat(4, 1fr); gap: 3rem; }
     .marquee-item { width: 8rem; height: 5rem; margin: 0 2rem; }
   }

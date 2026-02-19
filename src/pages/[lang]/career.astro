@@ -180,8 +180,8 @@ const acronymWords = isEN ? acronymEN : acronymES;
   .acronym-section { background-color: $secondBackgroundColor; padding: 8rem 3.7rem; }
   .acronym-container { max-width: 120rem; margin: 0 auto; }
   .acronym-grid { 
-     display: flex; flex-wrap: wrap; justify-content: center; gap: 3.5rem; 
-     align-items: baseline;
+     display: flex; flex-direction: column; align-items: flex-start; gap: 2rem;
+     padding-left: 20%;
   }
   .acronym-item { display: flex; align-items: center; gap: 1rem; }
   .acronym-letter {
@@ -220,5 +220,9 @@ const acronymWords = isEN ? acronymEN : acronymES;
     .hero-pic3 { width: 36.07rem; height: 24.168rem; transform: translateY(-0.5rem); }
     .hero-pic4 { width: 22.896rem; height: 28.438rem; transform: translate(-0.6rem, -0.8rem); }
     .btn-wrapper-gradient { margin: 0; }
+    .acronym-grid { 
+      flex-direction: row; justify-content: center; gap: 3.5rem; align-items: baseline;
+      padding-left: 0;
+    }
   }
 </style>
