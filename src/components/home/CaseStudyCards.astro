@@ -70,18 +70,30 @@ const isEN = locale === 'en';
   import 'swiper/css';
   import 'swiper/css/pagination';
 
-  const isMobile = window.innerWidth < 600;
-
   const csSwiper = new Swiper('.cs-swiper', {
     modules: [Pagination],
-    spaceBetween: isMobile ? 16 : 30,
-    slidesPerView: isMobile ? 1.2 : 3,
     loop: true,
-    centeredSlides: true,
     pagination: {
       dynamicBullets: true,
       type: 'bullets',
       clickable: true,
+    },
+    breakpoints: {
+      0: {
+        slidesPerView: 1.2,
+        spaceBetween: 16,
+        centeredSlides: true,
+      },
+      600: {
+        slidesPerView: 2,
+        spaceBetween: 30,
+        centeredSlides: false,
+      },
+      1024: {
+        slidesPerView: 3,
+        spaceBetween: 30,
+        centeredSlides: false,
+      },
     },
   });
 
