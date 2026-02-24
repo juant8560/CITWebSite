@@ -48,7 +48,7 @@ const employeesContent = await CareerContentService.getEmployeesContent(locale);
     <div class="metrics-grid">
       {aboutMetrics.map((metric: any) => (
         <div class="metric-card">
-          <h3 class="heading-large metric-value">{metric.prefix}{metric.value}+</h3>
+          <h3 class="heading-large metric-value">{metric.prefix === 'k' ? `${metric.value}${metric.prefix}` : `${metric.prefix}${metric.value}`}</h3>
           <p class="text-small metric-desc">{isEN ? (metric.descriptionEN || metric.descriptionES) : (metric.descriptionES || metric.descriptionEN)}</p>
         </div>
       ))}
@@ -96,40 +96,6 @@ const employeesContent = await CareerContentService.getEmployeesContent(locale);
           <h4 class="heading-small">{coComment.coName}</h4>
           <p class="text-small">{isEN ? (coComment.chargeEN || coComment.chargeES) : (coComment.chargeES || coComment.chargeEN)}</p>
         </div>
-      </div>
-    </section>
-  )}
-
-  <!-- Team -->
-  {employees.length > 0 && (
-    <section class="team-section">
-      <h2 class="heading-medium team-title">
-        {isEN
-          ? (employeesContent?.tittleEn || employeesContent?.tittleEs || 'Meet Our Team')
-          : (employeesContent?.tittleEs || employeesContent?.tittleEn || 'Nuestro Equipo')}
-      </h2>
-      <p class="text-small team-caption">
-        {isEN
-          ? (employeesContent?.captionEn || employeesContent?.captionEs || '')
-          : (employeesContent?.captionEs || employeesContent?.captionEn || '')}
-      </p>
-      <div class="team-grid">
-        {employees.map((emp: any) => (
-          <div class="team-card">
-            <div class="team-img">
-              <Image 
-                src={emp.imagePath} 
-                alt={emp.fullName} 
-                width={120} 
-                height={120}
-                format="webp"
-                quality="mid"
-              />
-            </div>
-            <h4 class="heading-small">{emp.fullName}</h4>
-            <p class="text-tiny">{isEN ? (emp.jobPositionEN || emp.jobPositionES) : (emp.jobPositionES || emp.jobPositionEN)}</p>
-          </div>
-        ))}
       </div>
     </section>
   )}
@@ -188,7 +154,7 @@ const employeesContent = await CareerContentService.getEmployeesContent(locale);
   }
 
   .hero-title { color: $primaryTextColor; }
-  .hero-caption { color: $secondaryTextColor; max-width: 60rem; margin: 0 auto; }
+  .hero-caption { color: #ffffff; max-width: 60rem; margin: 0 auto; font-size: 2rem; line-height: 1.5; }
 
   .btn-wrapper-gradient {
     border-radius: 0.6rem;

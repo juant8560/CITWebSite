@@ -19,9 +19,18 @@ const restOfText = (text: string) => text.split(' ').slice(1).join(' ');
       </div>
       <h3 class="heading-small subtitle">{isEN ? 'Locations' : 'Ubicaciones'}</h3>
       <div>
-        {locations.map((loc: any) => (
+        {locations
+          .filter((loc: any) => loc.address.includes('Avenida Circunvalacion'))
+          .map((loc: any) => (
           <p class="text-small text">
-            {getFirstWord(loc.address)} {restOfText(loc.address)}
+            <a 
+              href="https://www.google.com/maps/place/CIT/@15.4974525,-88.0363413,17z/data=!3m1!4b1!4m6!3m5!1s0x8f665bbe28a5c70b:0xa79c32baff6a6e7a!8m2!3d15.4974525!4d-88.0363413!16s%2Fg%2F11fhlcqmhv?entry=ttu&g_ep=EgoyMDI2MDIxOC4wIKXMDSoASAFQAw%3D%3D" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="map-link"
+            >
+              {loc.address}
+            </a>
           </p>
         ))}
       </div>
@@ -101,13 +110,22 @@ const restOfText = (text: string) => text.split(' ').slice(1).join(' ');
   .subtitle {
     color: $primaryTextColor;
     font-size: 1.6rem;
-    margin-bottom: 1.2rem;
+    margin-bottom: 0.5rem;
     text-align: center;
   }
 
   .text {
     color: $secondaryTextColor;
     margin-bottom: 1.6rem;
+  }
+
+  .map-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s;
+    &:hover {
+      text-decoration: none;
+    }
   }
 
   .social-media {
@@ -165,7 +183,7 @@ const restOfText = (text: string) => text.split(' ').slice(1).join(' ');
     .logo {
       width: 19.238rem;
       height: 5rem;
-      margin-inline: 0;
+      margin-bottom: 8rem;
     }
     .container {
       flex-direction: row;
@@ -178,9 +196,9 @@ const restOfText = (text: string) => text.split(' ').slice(1).join(' ');
       text-align: left;
       place-items: start;
       padding-block: 7rem;
-      padding-left: 17rem;
+      padding-left: 8rem;
     }
-    .subtitle { text-align: left; margin-bottom: 2.4rem; }
+    .subtitle { text-align: left; margin-bottom: 1rem; }
     .social-media {
       width: 50%;
       height: 50rem;
@@ -190,6 +208,6 @@ const restOfText = (text: string) => text.split(' ').slice(1).join(' ');
       padding-top: 8rem;
     }
     .media-icons { margin-top: -1.2rem; margin-bottom: 3rem; }
-    .rights-conditions { padding-inline: 17rem; }
+    .rights-conditions { padding-inline: 8rem; }
   }
 </style>

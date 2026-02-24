@@ -91,16 +91,15 @@ const acronymWords = isEN ? acronymEN : acronymES;
   <!-- Employee Feedback -->
   {employeesFeedback.length > 0 && (
     <section class="emp-feedback-section scroll-reveal">
-      <h2 class="heading-medium">{isEN ? 'What is like being part of Creative' : 'Cómo es ser parte de Creative'}</h2>
+      <h2 class="heading-medium">{isEN ? 'What It’s Like to Be Part of CIT' : 'Lo que significa ser parte de CIT'}</h2>
       <div class="feedback-grid">
         {employeesFeedback.map((fb: any) => (
           <div class="emp-feedback-card">
             <div class="emp-avatar">
               <img src={fb.Employee?.imagePath} alt={fb.Employee?.fullName} />
             </div>
+            <h4 class="heading-small">{isEN ? (fb.Employee?.jobPositionEN || fb.Employee?.jobPositionES) : (fb.Employee?.jobPositionES || fb.Employee?.jobPositionEN)}</h4>
             <p class="text-small emp-comment">{isEN ? (fb.commentEN || fb.commentES) : (fb.commentES || fb.commentEN)}</p>
-            <h4 class="heading-small">{fb.Employee?.fullName}</h4>
-            <p class="text-tiny">{isEN ? (fb.Employee?.jobPositionEN || fb.Employee?.jobPositionES) : (fb.Employee?.jobPositionES || fb.Employee?.jobPositionEN)}</p>
           </div>
         ))}
       </div>
@@ -144,7 +143,7 @@ const acronymWords = isEN ? acronymEN : acronymES;
 
   .hero-content {
     max-width: 50rem; display: flex; flex-direction: column; gap: 2rem; justify-content: center;
-    p { color: $secondaryTextColor; }
+    p { color: #ffffff; font-size: 2rem; line-height: 1.5; }
   }
 
   .hero-gallery {
@@ -206,11 +205,11 @@ const acronymWords = isEN ? acronymEN : acronymES;
   .emp-feedback-section { background-color: $primaryBackgroundColor; padding: 6rem 3.7rem; color: $primaryTextColor; text-align: center; h2 { margin-bottom: 4rem; } }
   .feedback-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 3rem; }
   .emp-feedback-card {
-    background-color: $secondBackgroundColor; border-radius: 1rem; padding: 4rem 2rem 2rem; max-width: 35rem; position: relative; text-align: center;
-    h4 { color: $primaryTextColor; margin-top: 1rem; } p { color: $secondaryTextColor; }
+    background-color: $secondBackgroundColor; border-radius: 1rem; padding: 4rem 2rem 2rem; max-width: 45rem; position: relative; text-align: center;
+    h4 { color: $primaryTextColor; margin-bottom: 2rem; text-transform: uppercase; font-family: 'Nexa'; }
   }
   .emp-avatar { width: 6rem; height: 6rem; border-radius: 50%; overflow: hidden; margin: -5rem auto 1rem; img { width: 100%; height: 100%; object-fit: cover; } }
-  .emp-comment { color: $captionTextColor !important; margin-bottom: 1rem; font-style: italic; }
+  .emp-comment { color: $captionTextColor !important; margin-bottom: 0; font-style: italic; font-size: 1.6rem; line-height: 1.6; }
 
   @media screen and (min-width: 600px) {
     .career-hero { flex-direction: row; text-align: left; }

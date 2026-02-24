@@ -12,7 +12,7 @@ const isEN = locale === 'en';
         {feedback.map((item: any) => (
           <div class="swiper-slide">
             <div class="feedback-card">
-              <div class="customer-pic">
+              <div class={`customer-pic ${item.companyName === 'Grupo Comidas' ? 'is-white-bg' : ''}`}>
                 <img src={item.picture} alt="Customer" width="80" height="80" loading="lazy" />
               </div>
               <div class="info">
@@ -103,7 +103,20 @@ const isEN = locale === 'en';
     position: absolute;
     top: 0;
     transform: translateY(-50%);
-    img { border-radius: 50%; object-fit: cover; }
+    width: 80px;
+    height: 80px;
+    background-color: $primaryBackgroundColor;
+    &.is-white-bg { background-color: #fff; }
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img { 
+      max-width: 90%; 
+      max-height: 90%;
+      object-fit: contain; 
+    }
   }
 
   .name { color: $primaryTextColor; font-size: 1.9rem; }

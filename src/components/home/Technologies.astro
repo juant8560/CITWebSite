@@ -34,8 +34,14 @@ function getPosition(index: number, total: number) {
         <div class="larger-ring">
           {outerRing.map((tech: any, i: number) => {
             const pos = getPosition(i, outerRing.length);
+            const isAzure = tech.name?.toLowerCase().includes('azure') || tech.logo?.toLowerCase().includes('azure');
             return (
-              <button class="large-tech tech-large tech-btn" data-name={tech.name} data-desc={isEN ? (tech.descriptionEN || tech.descriptionES) : (tech.descriptionES || tech.descriptionEN)} style={`left: ${pos.left}; top: ${pos.top};`}>
+              <button 
+                class="large-tech tech-large tech-btn" 
+                data-name={tech.name} 
+                data-desc={isEN ? (tech.descriptionEN || tech.descriptionES) : (tech.descriptionES || tech.descriptionEN)} 
+                style={`left: ${pos.left}; top: ${pos.top};`}
+              >
                 <img src={tech.logo} alt={tech.name} class="logo-filter" />
               </button>
             );
@@ -56,7 +62,6 @@ function getPosition(index: number, total: number) {
           <div class="dot dot2"></div>
           <div class="dot dot3"></div>
           <div class="dot dot4"></div>
-          <div class="dot dot5"></div>
         </div>
 
         <!-- Inner Ring -->
