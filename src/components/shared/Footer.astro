@@ -73,7 +73,7 @@ const restOfText = (text: string) => text.split(' ').slice(1).join(' ');
     </div>
   </div>
   <div class="rights-conditions">
-    <p class="text-small">{isEN ? 'All rights reserved 2022 CIT' : 'Todos los derechos reservados 2022 CIT'}</p>
+    <p class="text-small">{isEN ? `All rights reserved ${new Date().getFullYear()} CIT` : `Todos los derechos reservados ${new Date().getFullYear()} CIT`}</p>
     <p class="text-small">{isEN ? 'Privacy Policy' : 'Políticas de privacidad'}</p>
   </div>
 </footer>

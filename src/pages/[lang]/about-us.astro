@@ -73,16 +73,6 @@ const employeesContent = await CareerContentService.getEmployeesContent(locale);
           <img src={companyValue.imagePath} alt="Company" loading="lazy" />
         </div>
       </div>
-      {(companyValue.itemsES || companyValue.itemsEN) && (
-        <div class="values-list">
-          {(isEN ? (companyValue.itemsEN || companyValue.itemsES) : (companyValue.itemsES || companyValue.itemsEN)).map((item: string) => (
-            <div class="value-item">
-              <span class="value-dot"></span>
-              <p class="text-small">{item}</p>
-            </div>
-          ))}
-        </div>
-      )}
     </section>
   )}
 
